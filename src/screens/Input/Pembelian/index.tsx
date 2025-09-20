@@ -23,6 +23,10 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from "@mui/material/TableRow";
+import Alert from "@mui/material/Alert";
+import Modal from "@mui/material/Modal";
+import Snackbar, { SnackbarCloseReason } from "@mui/material/Snackbar";
+import PrintPage from "../../../components/PrintPage";
 
 interface IFormInput {
   kode_id: number
@@ -42,6 +46,17 @@ interface pembelianAkhir {
   rokok: number
   jumlah_rokok: number
 }
+
+const modalStyle = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 400,
+  bgcolor: 'background.paper',
+  boxShadow: 24,
+  p: 4,
+};
 
 export default function InputPembelian() {
 
@@ -80,11 +95,21 @@ export default function InputPembelian() {
     jumlah_rokok: 0
   })
   const [totalAkhir, setTotalAkhir] = useState(0)
+  const [openModal, setOpenModal] = useState(false)
+  const [inputId, setInputId] = useState(0)
+  const [openSnack, setOpenSnack] = useState(false)
 
   async function getData() {
     const db = await Database.load('sqlite:test.db')
+    const id = await db.select('SELECT id FROM Pembelian ORDER BY id DESC LIMIT 1')
     setValueWilayah(await db.select('SELECT * FROM Wilayah'))
     setValueKode(await db.select('SELECT id,kode FROM Kode'))
+    if (id.length == 0) {
+      return
+    }
+    else {
+      setInputId(id[0].id + 1)
+    }
   }
 
   async function getStore() {
@@ -150,10 +175,18 @@ export default function InputPembelian() {
     }
   }, [refreshTotal])
 
+  function clearField() {
+    setHarga(0)
+    setBruto(0)
+    setNetto(0)
+    setJumlahHarga(0)
+  }
+
   const handleNext: SubmitHandler<IFormInput> = (data) => {
     if (inputWilayah != null) {
       setJumlahPembelian([...jumlahPembelian,
       {
+        id: inputId,
         wilayah_id: valueWilayah[inputWilayah].id,
         kode_id: data.kode_id,
         nama: data.nama,
@@ -164,26 +197,23 @@ export default function InputPembelian() {
       }
       ])
       setFieldDisable(true)
-      setHarga(0)
-      setBruto(0)
-      setNetto(0)
-      setJumlahHarga(0)
+      clearField()
       setRefreshTotal(!refreshTotal)
+      setInputId(v => v += 1)
     }
   }
 
-  async function handlePrint() {
+  async function sendToDB() {
     const db = await Database.load('sqlite:test.db')
     for (let i = 0; i < jumlahPembelian.length; i++) {
       const pembelian = jumlahPembelian[i]
       await db.execute('INSERT INTO Pembelian (wilayah_id,kode_id,nama,harga,bruto,netto,jumlah_harga) VALUES ($1,$2,$3,$4,$5,$6,$7)',
         [pembelian.wilayah_id, pembelian.kode_id, pembelian.nama, pembelian.harga, pembelian.bruto, pembelian.netto, pembelian.jumlah_harga])
     }
-    console.log('sss')
-    setHarga(0)
-    setBruto(0)
-    setNetto(0)
-    setJumlahHarga(0)
+  }
+
+  function afterSend() {
+    setInputWilayah(null)
     setTotalAkhir(0)
     setJumlahTotal({
       bruto: 0,
@@ -200,8 +230,49 @@ export default function InputPembelian() {
     setFieldDisable(false)
   }
 
+  async function handleOnlySave() {
+    await sendToDB()
+    afterSend()
+    setOpenSnack(true)
+  }
+
+  function handleOpenPrint() {
+    setOpenModal(true)
+  }
+
+
+  function handleCloseSnack(event?: React.SyntheticEvent | Event,
+    reason?: SnackbarCloseReason) {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setOpenSnack(false)
+  }
+
   return (
-    <Box paddingY={0}>
+    <Box>
+      <Snackbar anchorOrigin={{ vertical: 'top', horizontal: 'center' }} open={openSnack} autoHideDuration={5000} onClose={handleCloseSnack}>
+        <Alert
+          onClose={handleCloseSnack}
+          severity='success'
+          variant='filled'
+          sx={{ width: '100%' }}
+        >
+          Berhasil Menyimpan Data
+        </Alert>
+      </Snackbar>
+      <Modal open={openModal} onClose={() => setOpenModal(false)}>
+        <Box sx={modalStyle}>
+          <PrintPage
+            dataPembelian={jumlahPembelian}
+            dataBiaya={dataBiaya}
+            biayaAkhir={biayaAkhir}
+            jumlahTotal={jumlahTotal}
+            totalAkhir={totalAkhir}
+            handleOnlySave={handleOnlySave}
+            handleClose={() => setOpenModal(false)} />
+        </Box>
+      </Modal>
       <Typography variant="h4">Input Pembelian</Typography>
       <Box sx={{ marginBottom: '20px' }}>
         <Box component={"section"} sx={{ p: 2, border: '2px solid black', borderRadius: 1, marginY: '20px' }}>
@@ -353,8 +424,9 @@ export default function InputPembelian() {
               <Divider />
               <Typography variant="body2">Rp. {totalAkhir}</Typography>
             </Box>
-            <Stack justifyContent='center' alignContent='center'>
-              <Button variant="contained" sx={{ margin: '20px' }} onClick={handlePrint} startIcon={<Print />}>Cetak</Button>
+            <Stack justifyContent='center' alignContent='center' gap='20px'>
+              <Button variant="contained" onClick={handleOpenPrint} startIcon={<Print />}>Cetak</Button>
+              <Button variant="contained" onClick={handleOnlySave} startIcon={<Save />}>Hanya Simpan</Button>
             </Stack>
           </Stack>
         </Stack>
