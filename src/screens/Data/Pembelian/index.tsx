@@ -44,41 +44,49 @@ const columns: GridColDef[] = [
   }
 ];
 
+interface pembelianProps {
+  id: number
+  nama: string
+  kode: string
+  harga: number
+  bruto: number
+  netto: number
+  jumlah_harga: number
+}
 
 export default function DataPembelian() {
 
-  const [dataPembelian, setDataPembelian] = useState([])
+  const [dataPembelian, setDataPembelian] = useState<pembelianProps[]>([])
   const [jumlahTotal, setJumlahTotal] = useState({
     harga: 0,
     bruto: 0,
     netto: 0,
     jumlah_harga: 0
   })
-  const [valueKode, setValueKode] = useState([])
+  const [valueKode, setValueKode] = useState<{ id: number, kode: string }[]>([])
   const [filterNomer, setFilterNomer] = useState(0)
   const [filterNama, setFilterNama] = useState('')
   const [filterKode, setFilterKode] = useState(0)
 
-  function sendToFront(params) {
+  function sendToFront(params: pembelianProps[]) {
     setDataPembelian(params)
     setJumlahTotal({
-      harga: params.reduce((v: number, n: number) => v + n.harga, 0),
-      bruto: params.reduce((v: number, n: number) => v + n.bruto, 0),
-      netto: params.reduce((v: number, n: number) => v + n.netto, 0),
-      jumlah_harga: params.reduce((v: number, n: number) => v + n.jumlah_harga, 0)
+      harga: params.reduce((v: number, n) => v + n.harga, 0),
+      bruto: params.reduce((v: number, n) => v + n.bruto, 0),
+      netto: params.reduce((v: number, n) => v + n.netto, 0),
+      jumlah_harga: params.reduce((v: number, n) => v + n.jumlah_harga, 0)
     })
   }
 
   async function getKode() {
     const db = await Database.load('sqlite:test.db')
-    const kode = await db.select('SELECT id,kode from Kode')
+    const kode: { id: number, kode: string }[] = await db.select('SELECT id,kode from Kode')
     setValueKode(kode)
-
   }
 
   async function getData() {
     const db = await Database.load('sqlite:test.db')
-    const data = await db.select('SELECT Pembelian.id, kode, nama, harga, bruto, netto, jumlah_harga from Pembelian INNER JOIN Kode ON Pembelian.kode_id = Kode.id')
+    const data: pembelianProps[] = await db.select('SELECT Pembelian.id, kode, nama, harga, bruto, netto, jumlah_harga from Pembelian INNER JOIN Kode ON Pembelian.kode_id = Kode.id')
     sendToFront(data)
   }
 
@@ -91,7 +99,7 @@ export default function DataPembelian() {
     setFilterKode(0)
     setFilterNama('')
     const db = await Database.load('sqlite:test.db')
-    const data = await db.select('SELECT Pembelian.id, kode, nama, harga, bruto, netto, jumlah_harga from Pembelian INNER JOIN Kode ON Pembelian.kode_id = Kode.id WHERE Pembelian.id = $1', [filterNomer])
+    const data: pembelianProps[] = await db.select('SELECT Pembelian.id, kode, nama, harga, bruto, netto, jumlah_harga from Pembelian INNER JOIN Kode ON Pembelian.kode_id = Kode.id WHERE Pembelian.id = $1', [filterNomer])
     sendToFront(data)
   }
 
@@ -99,7 +107,7 @@ export default function DataPembelian() {
     setFilterNomer(0)
     setFilterNama('')
     const db = await Database.load('sqlite:test.db')
-    const data = await db.select('SELECT Pembelian.id, kode, nama, harga, bruto, netto, jumlah_harga from Pembelian INNER JOIN Kode ON Pembelian.kode_id = Kode.id WHERE kode_id = $1', [filterKode])
+    const data: pembelianProps[] = await db.select('SELECT Pembelian.id, kode, nama, harga, bruto, netto, jumlah_harga from Pembelian INNER JOIN Kode ON Pembelian.kode_id = Kode.id WHERE kode_id = $1', [filterKode])
     sendToFront(data)
   }
 
@@ -107,7 +115,7 @@ export default function DataPembelian() {
     setFilterNomer(0)
     setFilterKode(0)
     const db = await Database.load('sqlite:test.db')
-    const data = await db.select('SELECT Pembelian.id, kode, nama, harga, bruto, netto, jumlah_harga from Pembelian INNER JOIN Kode ON Pembelian.kode_id = Kode.id WHERE nama = $1', [filterNama])
+    const data: pembelianProps[] = await db.select('SELECT Pembelian.id, kode, nama, harga, bruto, netto, jumlah_harga from Pembelian INNER JOIN Kode ON Pembelian.kode_id = Kode.id WHERE nama = $1', [filterNama])
     sendToFront(data)
   }
 
@@ -123,7 +131,11 @@ export default function DataPembelian() {
       <Typography variant='h4'>Data Pembelian</Typography>
       <Stack direction='row' gap='20px'>
         <Stack direction='row' gap='20px' alignItems='center'>
-          <TextField type='number' label='No.' onChange={(e) => setFilterNomer(e.target.value)} value={filterNomer} />
+          <TextField
+            type='number' label='No.'
+            //@ts-ignore
+            onChange={(e) => setFilterNomer(e.target.value)}
+            value={filterNomer} />
           {filterNomer != 0 && <Button endIcon={<Search />} onClick={handleFilterNomer} />}
         </Stack>
         <Stack direction='row' gap='20px' alignItems='center'>
