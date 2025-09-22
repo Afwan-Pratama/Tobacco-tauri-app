@@ -30,6 +30,15 @@ const modalStyle = {
   p: 4,
 };
 
+interface wilayahProps {
+  id: number
+  nama: string
+  kondisi: string
+  value_kondisi: number
+  netto_kondisi: number
+  netto_default: number
+}
+
 export default function Wilayah() {
 
   const [openModal, setOpenModal] = useState(false)
@@ -42,7 +51,7 @@ export default function Wilayah() {
   })
   const [inputId, setInputId] = useState(0)
   const [inputKode, setInputKode] = useState('')
-  const [dataWilayah, setDataWilayah] = useState([])
+  const [dataWilayah, setDataWilayah] = useState<wilayahProps[]>([])
   const [action, setAction] = useState("")
   const [openDial, setOpenDial] = useState(false)
   const [openSnack, setOpenSnack] = useState(false)
@@ -108,20 +117,20 @@ export default function Wilayah() {
     setRefresh(!refresh)
   }
 
-  function handleClickUpdate(params) {
+  function handleClickUpdate(params: wilayahProps) {
     setAction("Edit")
     setOpenModal(true)
-    setInputWilayah((v) => v = {
-      nama: params.row.nama,
-      kondisi: params.row.kondisi,
-      value_kondisi: params.row.value_kondisi,
-      netto_kondisi: params.row.netto_kondisi,
-      netto_default: params.row.netto_default
+    setInputWilayah({
+      nama: params.nama,
+      kondisi: params.kondisi,
+      value_kondisi: params.value_kondisi,
+      netto_kondisi: params.netto_kondisi,
+      netto_default: params.netto_default
     })
     setInputId(params.id)
   }
 
-  function handleClickDelete(id, kode) {
+  function handleClickDelete(id: number, kode: string) {
     setAction("Hapus")
     setInputKode(kode)
     setInputId(id)
@@ -136,7 +145,7 @@ export default function Wilayah() {
     setRefresh(!refresh)
   }
 
-  function handleCloseSnack(event?: React.SyntheticEvent | Event,
+  function handleCloseSnack(_event: React.SyntheticEvent | Event,
     reason?: SnackbarCloseReason) {
     if (reason === 'clickaway') {
       return;
@@ -174,8 +183,8 @@ export default function Wilayah() {
       field: 'actions',
       type: 'actions',
       getActions: (params) => [
-        <GridActionsCellItem icon={<EditSquare />} label='Edit' onClick={() => handleClickUpdate(params)} />,
-        <GridActionsCellItem icon={<Delete />} label='Hapus' onClick={() => handleClickDelete(params.id, params.row.kode)} />
+        <GridActionsCellItem icon={<EditSquare />} label='Edit' onClick={() => handleClickUpdate(params.row)} />,
+        <GridActionsCellItem icon={<Delete />} label='Hapus' onClick={() => handleClickDelete(params.row.id, params.row.kode)} />
       ]
     }
   ];
@@ -211,13 +220,13 @@ export default function Wilayah() {
             margin='normal'
             label='Nama Wilayah'
             fullWidth
-            onChange={(e) => setInputWilayah((v) => v = { ...inputWilayah, nama: e.target.value })}
+            onChange={(e) => setInputWilayah({ ...inputWilayah, nama: e.target.value })}
             value={inputWilayah.nama} />
           <FormControl fullWidth margin='normal'>
             <InputLabel>Kondisi</InputLabel>
             <Select
               label="Kondisi"
-              onChange={(e) => setInputWilayah((v) => v = { ...inputWilayah, kondisi: e.target.value })}
+              onChange={(e) => setInputWilayah({ ...inputWilayah, kondisi: e.target.value })}
               value={inputWilayah.kondisi}
             >
               <MenuItem value={'lebih'}>Lebih</MenuItem>
@@ -231,7 +240,8 @@ export default function Wilayah() {
             label='Dari'
             fullWidth
             disabled={disableDari}
-            onChange={(e) => setInputWilayah((v) => v = { ...inputWilayah, value_kondisi: e.target.value })}
+            //@ts-ignore
+            onChange={(e) => setInputWilayah({ ...inputWilayah, value_kondisi: e.target.value })}
             value={inputWilayah.value_kondisi} />
           <TextField
             type='number'
@@ -239,14 +249,16 @@ export default function Wilayah() {
             label='Potongan netto dari kondisi'
             fullWidth
             disabled={disableDari}
-            onChange={(e) => setInputWilayah((v) => v = { ...inputWilayah, netto_kondisi: e.target.value })}
+            //@ts-ignore
+            onChange={(e) => setInputWilayah({ ...inputWilayah, netto_kondisi: e.target.value })}
             value={inputWilayah.netto_kondisi} />
           <TextField
             type='number'
             margin='normal'
             label='Potongan netto awal'
             fullWidth
-            onChange={(e) => setInputWilayah((v) => v = { ...inputWilayah, netto_default: e.target.value })}
+            //@ts-ignore
+            onChange={(e) => setInputWilayah({ ...inputWilayah, netto_default: e.target.value })}
             value={inputWilayah.netto_default} />
           <Button onClick={handleSubmit} disabled={disableButton} startIcon={<Save />}>Simpan</Button>
         </Stack>

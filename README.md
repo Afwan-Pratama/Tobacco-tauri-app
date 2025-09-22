@@ -1,1 +1,1 @@
-# Tauri + React + Typescript
+# Tobacco Tauri App

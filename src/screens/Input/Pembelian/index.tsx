@@ -47,6 +47,26 @@ interface pembelianAkhir {
   jumlah_rokok: number
 }
 
+interface wilayahProps {
+  id: number
+  nama: string
+  kondisi: string
+  value_kondisi: number
+  netto_kondisi: number
+  netto_default: number
+}
+
+interface pembelianProps {
+  id: number
+  wilayah_id: number
+  kode_id: number
+  nama: string
+  harga: number
+  bruto: number
+  netto: number
+  jumlah_harga: number
+}
+
 const modalStyle = {
   position: 'absolute',
   top: '50%',
@@ -70,11 +90,11 @@ export default function InputPembelian() {
   const [bruto, setBruto] = useState(0)
   const [netto, setNetto] = useState(0)
   const [inputWilayah, setInputWilayah] = useState(null)
-  const [valueWilayah, setValueWilayah] = useState([])
-  const [valueKode, setValueKode] = useState([])
+  const [valueWilayah, setValueWilayah] = useState<wilayahProps[]>([])
+  const [valueKode, setValueKode] = useState<{ id: number, kode: string }[]>([])
   const [harga, setHarga] = useState(0)
   const [jumlahHarga, setJumlahHarga] = useState(0)
-  const [jumlahPembelian, setJumlahPembelian] = useState([])
+  const [jumlahPembelian, setJumlahPembelian] = useState<pembelianProps[]>([])
   const [fieldDisable, setFieldDisable] = useState(false)
   const [jumlahTotal, setJumlahTotal] = useState({
     bruto: 0,
@@ -101,7 +121,7 @@ export default function InputPembelian() {
 
   async function getData() {
     const db = await Database.load('sqlite:test.db')
-    const id = await db.select('SELECT id FROM Pembelian ORDER BY id DESC LIMIT 1')
+    const id: { id: number }[] = await db.select('SELECT id FROM Pembelian ORDER BY id DESC LIMIT 1')
     setValueWilayah(await db.select('SELECT * FROM Wilayah'))
     setValueKode(await db.select('SELECT id,kode FROM Kode'))
     if (id.length == 0) {
@@ -128,20 +148,20 @@ export default function InputPembelian() {
       switch (wilayah.kondisi) {
         case "kurang":
           if (bruto < wilayah.value_kondisi) {
-            setNetto((v) => v = bruto - wilayah.netto_kondisi)
+            setNetto(bruto - wilayah.netto_kondisi)
           } else {
-            setNetto((v) => v = bruto - wilayah.netto_default)
+            setNetto(bruto - wilayah.netto_default)
           }
           break;
         case "lebih":
           if (bruto > wilayah.value_kondisi) {
-            setNetto((v) => v = bruto - wilayah.netto_kondisi)
+            setNetto(bruto - wilayah.netto_kondisi)
           } else {
-            setNetto((v) => v = bruto - wilayah.netto_default)
+            setNetto(bruto - wilayah.netto_default)
           }
           break;
         case "tidak":
-          setNetto((v) => v = bruto - wilayah.netto_default)
+          setNetto(bruto - wilayah.netto_default)
           break;
       }
     }
@@ -149,7 +169,7 @@ export default function InputPembelian() {
 
   useEffect(() => {
     if (netto > 0) {
-      setJumlahHarga((v) => v = harga * netto)
+      setJumlahHarga(harga * netto)
     }
   }, [{ harga, bruto }])
 
@@ -241,7 +261,7 @@ export default function InputPembelian() {
   }
 
 
-  function handleCloseSnack(event?: React.SyntheticEvent | Event,
+  function handleCloseSnack(_event: React.SyntheticEvent | Event,
     reason?: SnackbarCloseReason) {
     if (reason === 'clickaway') {
       return;
@@ -281,6 +301,7 @@ export default function InputPembelian() {
             <Select
               disabled={fieldDisable}
               label="Wilayah"
+              //@ts-ignore
               onChange={(e) => setInputWilayah(e.target.value)}
               value={inputWilayah}
             >
@@ -333,25 +354,62 @@ export default function InputPembelian() {
             rules={{ required: true }}
             control={control}
             render={({ field: { onChange, value } }) => (
-              <TextField disabled={fieldDisable} margin="normal" label={"Nama"} error={errors.nama ? true : false} helperText={errors.nama ? 'Inputan Salah' : ''} fullWidth onChange={onChange} value={value} />
+              <TextField
+                disabled={fieldDisable}
+                margin="normal"
+                label={"Nama"}
+                error={errors.nama ? true : false}
+                helperText={errors.nama ? 'Inputan Salah' : ''}
+                fullWidth
+                onChange={onChange}
+                value={value} />
             )} />
-          <TextField margin="normal" label={"Harga"} fullWidth type="number" slotProps={{
-            input: {
-              startAdornment: <InputAdornment position="start">Rp</InputAdornment>
-            }
-          }} onChange={(e) => setHarga(e.target.value)} value={harga} disabled={inputWilayah == null} />
-          <TextField margin="normal" label={"Bruto"} disabled={inputWilayah == null} fullWidth type="number" slotProps={{
-            input: {
-              endAdornment: <InputAdornment position="end">Kg</InputAdornment>
-            }
-          }} onChange={(e) => setBruto(e.target.value)} value={bruto} />
+          <TextField
+            margin="normal"
+            label={"Harga"}
+            fullWidth
+            type="number"
+            slotProps={{
+              input: {
+                startAdornment: <InputAdornment position="start">Rp</InputAdornment>
+              }
+            }}
+            //@ts-ignore
+            onChange={(e) => setHarga(e.target.value)}
+            value={harga}
+            disabled={inputWilayah == null} />
+          <TextField
+            margin="normal"
+            label={"Bruto"}
+            disabled={inputWilayah == null}
+            fullWidth
+            type="number"
+            slotProps={{
+              input: {
+                endAdornment: <InputAdornment position="end">Kg</InputAdornment>
+              }
+            }}
+            //@ts-ignore
+            onChange={(e) => setBruto(e.target.value)}
+            value={bruto} />
           <Typography variant="body1">Netto : {netto} Kg</Typography>
           <Typography variant="body1">Jumlah Harga: Rp.{jumlahHarga}</Typography>
-          <Button variant="contained" sx={{ margin: '20px' }} disabled={harga == 0 || bruto == 0} endIcon={<Save />} onClick={handleSubmit(handleNext)}>Lanjutkan</Button>
+          <Button
+            variant="contained"
+            sx={{ margin: '20px' }}
+            disabled={harga == 0 || bruto == 0}
+            endIcon={<Save />}
+            onClick={handleSubmit(handleNext)}>
+            Lanjutkan
+          </Button>
         </Box>
       </Box>
       {jumlahPembelian.length != 0 && (
-        <Stack gap='20px' sx={{ p: 4, boxShadow: 24, minHeight: '200px', zIndex: 4, position: "sticky", bottom: 0, right: 0, left: 0, bgcolor: 'background.paper' }} direction='row' justifyContent='space-between'>
+        <Stack
+          gap='20px'
+          sx={{ p: 4, boxShadow: 24, minHeight: '200px', zIndex: 4, position: "sticky", bottom: 0, right: 0, left: 0, bgcolor: 'background.paper' }}
+          direction='row'
+          justifyContent='space-between'>
           <TableContainer component={Paper} sx={{ width: '400px' }}>
             <Table>
               <TableHead>
