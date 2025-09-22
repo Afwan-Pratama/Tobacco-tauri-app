@@ -5,6 +5,7 @@ import Box from '@mui/material/Box'
 import Toolbar from '@mui/material/Toolbar'
 import { createTheme, ThemeProvider } from '@mui/material'
 import GlobalStyles from '@mui/material/GlobalStyles'
+import { startVariable } from './commons/startVariable'
 
 const drawerWidth: number = 240;
 
@@ -19,6 +20,8 @@ const theme = createTheme({
 })
 
 function Root(): React.JSX.Element {
+
+  startVariable()
 
   return (
     <ThemeProvider theme={theme}>

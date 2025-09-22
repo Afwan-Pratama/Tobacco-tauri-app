@@ -33,6 +33,12 @@ const modalStyle = {
   p: 4,
 };
 
+interface kodeProps {
+  id: number
+  kode: string
+  aktif: boolean
+}
+
 export default function Kode() {
 
   const [openModal, setOpenModal] = useState(false)
@@ -40,7 +46,7 @@ export default function Kode() {
   const [inputKode, setInputKode] = useState('')
   const [inputAktif, setInputAktif] = useState(true)
   const [disableButton, setDisableButton] = useState(true)
-  const [dataKode, setDataKode] = useState([])
+  const [dataKode, setDataKode] = useState<kodeProps[]>([])
   const [action, setAction] = useState("")
   const [openDial, setOpenDial] = useState(false)
   const [openSnack, setOpenSnack] = useState(false)
@@ -87,15 +93,15 @@ export default function Kode() {
     setRefresh(!refresh)
   }
 
-  function handleClickUpdate(params) {
+  function handleClickUpdate(params: kodeProps) {
     setAction("Edit")
     setOpenModal(true)
-    setInputKode(params.row.kode)
-    setInputAktif(params.row.aktif)
+    setInputKode(params.kode)
+    setInputAktif(params.aktif)
     setInputId(params.id)
   }
 
-  function handleClickDelete(id, kode) {
+  function handleClickDelete(id: number, kode: string) {
     setAction("Hapus")
     setInputKode(kode)
     setInputId(id)
@@ -110,7 +116,7 @@ export default function Kode() {
     setRefresh(!refresh)
   }
 
-  function handleCloseSnack(event?: React.SyntheticEvent | Event,
+  function handleCloseSnack(_event: React.SyntheticEvent | Event,
     reason?: SnackbarCloseReason) {
     if (reason === 'clickaway') {
       return;
@@ -134,8 +140,8 @@ export default function Kode() {
       field: 'actions',
       type: 'actions',
       getActions: (params) => [
-        <GridActionsCellItem icon={<EditSquare />} label='Edit' onClick={() => handleClickUpdate(params)} />,
-        <GridActionsCellItem icon={<Delete />} label='Hapus' onClick={() => handleClickDelete(params.id, params.row.kode)} />
+        <GridActionsCellItem icon={<EditSquare />} label='Edit' onClick={() => handleClickUpdate(params.row)} />,
+        <GridActionsCellItem icon={<Delete />} label='Hapus' onClick={() => handleClickDelete(params.row.id, params.row.kode)} />
       ]
     }
   ];
@@ -171,6 +177,7 @@ export default function Kode() {
           <FormControl fullWidth>
             <FormLabel>Status</FormLabel>
             <RadioGroup
+              // @ts-ignore
               onChange={(e) => setInputAktif(e.target.value)}
               value={inputAktif}
               defaultValue={true}
