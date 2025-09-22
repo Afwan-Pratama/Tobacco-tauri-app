@@ -1,4 +1,3 @@
-import Print from "@mui/icons-material/Print"
 import Save from "@mui/icons-material/Save";
 import Box from "@mui/material/Box"
 import Button from "@mui/material/Button"
@@ -14,19 +13,11 @@ import Database from "@tauri-apps/plugin-sql";
 import { useEffect, useState } from "react";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { load } from "@tauri-apps/plugin-store"
-import Divider from '@mui/material/Divider';
-import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from "@mui/material/TableRow";
 import Alert from "@mui/material/Alert";
-import Modal from "@mui/material/Modal";
 import Snackbar, { SnackbarCloseReason } from "@mui/material/Snackbar";
 import PrintPage from "../../../components/PrintPage";
+import PreviewPrint from "./components/PreviewPrint";
 
 interface IFormInput {
   kode_id: number
@@ -67,17 +58,6 @@ interface pembelianProps {
   jumlah_harga: number
 }
 
-const modalStyle = {
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: 400,
-  bgcolor: 'background.paper',
-  boxShadow: 24,
-  p: 4,
-};
-
 export default function InputPembelian() {
 
   const { control, handleSubmit, formState: { errors } } = useForm({
@@ -115,7 +95,6 @@ export default function InputPembelian() {
     jumlah_rokok: 0
   })
   const [totalAkhir, setTotalAkhir] = useState(0)
-  const [openModal, setOpenModal] = useState(false)
   const [inputId, setInputId] = useState(0)
   const [openSnack, setOpenSnack] = useState(false)
 
@@ -253,13 +232,9 @@ export default function InputPembelian() {
   async function handleOnlySave() {
     await sendToDB()
     afterSend()
+    clearField()
     setOpenSnack(true)
   }
-
-  function handleOpenPrint() {
-    setOpenModal(true)
-  }
-
 
   function handleCloseSnack(_event: React.SyntheticEvent | Event,
     reason?: SnackbarCloseReason) {
@@ -281,214 +256,141 @@ export default function InputPembelian() {
           Berhasil Menyimpan Data
         </Alert>
       </Snackbar>
-      <Modal open={openModal} onClose={() => setOpenModal(false)}>
-        <Box sx={modalStyle}>
-          <PrintPage
-            dataPembelian={jumlahPembelian}
-            dataBiaya={dataBiaya}
-            biayaAkhir={biayaAkhir}
-            jumlahTotal={jumlahTotal}
-            totalAkhir={totalAkhir}
-            handleOnlySave={handleOnlySave}
-            handleClose={() => setOpenModal(false)} />
-        </Box>
-      </Modal>
       <Typography variant="h4">Input Pembelian</Typography>
       <Box sx={{ marginBottom: '20px' }}>
-        <Box component={"section"} sx={{ p: 2, border: '2px solid black', borderRadius: 1, marginY: '20px' }}>
-          <FormControl fullWidth margin="normal">
-            <InputLabel >Wilayah</InputLabel>
-            <Select
-              disabled={fieldDisable}
-              label="Wilayah"
-              //@ts-ignore
-              onChange={(e) => setInputWilayah(e.target.value)}
-              value={inputWilayah}
-            >
-              {valueWilayah.map((v, i) => (
-                <MenuItem value={i}>{v.nama}</MenuItem>
-              ))
-              }
-            </Select>
-            {
-              valueWilayah.length == 0 && (
-                <FormHelperText error={true} >Data Wilayah Masih Kosong</FormHelperText>
-              )
-            }
-          </FormControl>
-
-          <Controller
-            name="kode_id"
-            control={control}
-            rules={{ required: true }}
-            render={({ field: { onChange, value } }) => (
-              <FormControl fullWidth margin="normal">
-                <InputLabel >Kode</InputLabel>
-                <Select
-                  error={errors.kode_id ? true : false}
-                  disabled={fieldDisable}
-                  label="Kode"
-                  onChange={onChange}
-                  value={value}
-                >
-                  {valueKode.map((v) => (
-                    <MenuItem value={v.id}>{v.kode}</MenuItem>
-                  ))
-                  }
-                </Select>
-                {
-                  errors.kode_id && (
-                    <FormHelperText error={errors.kode_id ? true : false}>Inputan masih kosong</FormHelperText>
-                  )
-                }
-                {
-                  valueKode.length == 0 && (
-                    <FormHelperText error={true} >Data Kode Masih Kosong</FormHelperText>
-                  )
-                }
-              </FormControl>
-
-            )} />
-          <Controller
-            name="nama"
-            rules={{ required: true }}
-            control={control}
-            render={({ field: { onChange, value } }) => (
-              <TextField
-                disabled={fieldDisable}
-                margin="normal"
-                label={"Nama"}
-                error={errors.nama ? true : false}
-                helperText={errors.nama ? 'Inputan Salah' : ''}
-                fullWidth
-                onChange={onChange}
-                value={value} />
-            )} />
-          <TextField
-            margin="normal"
-            label={"Harga"}
-            fullWidth
-            type="number"
-            slotProps={{
-              input: {
-                startAdornment: <InputAdornment position="start">Rp</InputAdornment>
-              }
-            }}
-            //@ts-ignore
-            onChange={(e) => setHarga(e.target.value)}
-            value={harga}
-            disabled={inputWilayah == null} />
-          <TextField
-            margin="normal"
-            label={"Bruto"}
-            disabled={inputWilayah == null}
-            fullWidth
-            type="number"
-            slotProps={{
-              input: {
-                endAdornment: <InputAdornment position="end">Kg</InputAdornment>
-              }
-            }}
-            //@ts-ignore
-            onChange={(e) => setBruto(e.target.value)}
-            value={bruto} />
-          <Typography variant="body1">Netto : {netto} Kg</Typography>
-          <Typography variant="body1">Jumlah Harga: Rp.{jumlahHarga}</Typography>
-          <Button
-            variant="contained"
-            sx={{ margin: '20px' }}
-            disabled={harga == 0 || bruto == 0}
-            endIcon={<Save />}
-            onClick={handleSubmit(handleNext)}>
-            Lanjutkan
-          </Button>
-        </Box>
-      </Box>
-      {jumlahPembelian.length != 0 && (
         <Stack
-          gap='20px'
-          sx={{ p: 4, boxShadow: 24, minHeight: '200px', zIndex: 4, position: "sticky", bottom: 0, right: 0, left: 0, bgcolor: 'background.paper' }}
           direction='row'
-          justifyContent='space-between'>
-          <TableContainer component={Paper} sx={{ width: '400px' }}>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Nama</TableCell>
-                  <TableCell>Harga</TableCell>
-                  <TableCell>Bruto</TableCell>
-                  <TableCell>Netto</TableCell>
-                  <TableCell>Jumlah Harga</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {jumlahPembelian.map((v, i) => (
-                  <TableRow
-                    key={i}
-                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                    <TableCell>{v.nama}</TableCell>
-                    <TableCell>{v.harga}</TableCell>
-                    <TableCell>{v.bruto}</TableCell>
-                    <TableCell>{v.netto}</TableCell>
-                    <TableCell>{v.jumlah_harga}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-          <Stack flexWrap='nowrap' direction='row' justifyContent='end' gap='20px'>
-            <Box>
-              <Typography variant="body1" sx={{ opacity: '0' }}>{'-'}</Typography>
-              <Typography variant="body2" sx={{ opacity: '0' }}>{'-'}</Typography>
-              <Typography variant="body2">Administrasi</Typography>
-              <Typography variant="body2">Pajak</Typography>
-              <Typography variant="body2">Rokok</Typography>
-              <Divider sx={{ opacity: '0' }} />
-              <Typography variant="body2" sx={{ opacity: '0' }}>{'-'}</Typography>
-            </Box>
-            <Box>
-              <Typography variant="body1">{'Harga Satuan'}</Typography>
-              <Typography variant="body2" sx={{ opacity: '0' }}>{'-'}</Typography>
-              <Typography variant="body2">Rp. {dataBiaya?.administrasi}</Typography>
-              <Typography variant="body2">{dataBiaya?.pajak}%</Typography>
-              <Typography variant="body2">Rp. {dataBiaya?.rokok}</Typography>
-              <Divider sx={{ opacity: '0' }} />
-              <Typography variant="body2" sx={{ opacity: '0' }}>{'-'}</Typography>
-            </Box>
-            <Box>
-              <Typography variant="body1" sx={{ opacity: '0' }}>{'-'}</Typography>
-              <Typography variant="body2" sx={{ opacity: '0' }}>{'-'}</Typography>
-              <Typography variant="body2">{'x'}</Typography>
-              <Typography variant="body2" sx={{ opacity: '0' }}>{'-'}</Typography>
-              <Typography variant="body2">{'x'}</Typography>
-              <Divider sx={{ opacity: '0' }} />
-              <Typography variant="body2" sx={{ opacity: '0' }}>{'-'}</Typography>
-            </Box>
-            <Box>
-              <Typography variant="body1">{'Jumlah'}</Typography>
-              <Typography variant="body2" sx={{ opacity: '0' }}>{'-'}</Typography>
-              <Typography variant="body2">{jumlahPembelian.length} Keranjang</Typography>
-              <Typography variant="body2" sx={{ opacity: '0' }}>{'-'}</Typography>
-              <Typography variant="body2">{biayaAkhir.jumlah_rokok} Rokok</Typography>
-              <Divider />
-              <Typography variant="body2">{'Total Akhir :'}</Typography>
-            </Box>
-            <Box>
-              <Typography variant="body1">{'Total Jumlah Harga'}</Typography>
-              <Typography variant="body2">Rp. {jumlahTotal.harga}</Typography>
-              <Typography variant="body2">Rp. {biayaAkhir.administrasi}</Typography>
-              <Typography variant="body2">Rp. {biayaAkhir.pajak}</Typography>
-              <Typography variant="body2">Rp. {biayaAkhir.rokok}</Typography>
-              <Divider />
-              <Typography variant="body2">Rp. {totalAkhir}</Typography>
-            </Box>
-            <Stack justifyContent='center' alignContent='center' gap='20px'>
-              <Button variant="contained" onClick={handleOpenPrint} startIcon={<Print />}>Cetak</Button>
-              <Button variant="contained" onClick={handleOnlySave} startIcon={<Save />}>Hanya Simpan</Button>
-            </Stack>
+          component={"section"}
+          justifyContent='space-between'
+          sx={{ p: 2, border: '2px solid black', borderRadius: 1, marginY: '20px' }}>
+          <Box>
+
+            <FormControl fullWidth margin="normal">
+              <InputLabel >Wilayah</InputLabel>
+              <Select
+                disabled={fieldDisable}
+                label="Wilayah"
+                //@ts-ignore
+                onChange={(e) => setInputWilayah(e.target.value)}
+                value={inputWilayah}
+              >
+                {valueWilayah.map((v, i) => (
+                  <MenuItem value={i}>{v.nama}</MenuItem>
+                ))
+                }
+              </Select>
+              {
+                valueWilayah.length == 0 && (
+                  <FormHelperText error={true} >Data Wilayah Masih Kosong</FormHelperText>
+                )
+              }
+            </FormControl>
+
+            <Controller
+              name="kode_id"
+              control={control}
+              rules={{ required: true }}
+              render={({ field: { onChange, value } }) => (
+                <FormControl fullWidth margin="normal">
+                  <InputLabel >Kode</InputLabel>
+                  <Select
+                    error={errors.kode_id ? true : false}
+                    disabled={fieldDisable}
+                    label="Kode"
+                    onChange={onChange}
+                    value={value}
+                  >
+                    {valueKode.map((v) => (
+                      <MenuItem value={v.id}>{v.kode}</MenuItem>
+                    ))
+                    }
+                  </Select>
+                  {
+                    errors.kode_id && (
+                      <FormHelperText error={errors.kode_id ? true : false}>Inputan masih kosong</FormHelperText>
+                    )
+                  }
+                  {
+                    valueKode.length == 0 && (
+                      <FormHelperText error={true} >Data Kode Masih Kosong</FormHelperText>
+                    )
+                  }
+                </FormControl>
+
+              )} />
+            <Controller
+              name="nama"
+              rules={{ required: true }}
+              control={control}
+              render={({ field: { onChange, value } }) => (
+                <TextField
+                  disabled={fieldDisable}
+                  margin="normal"
+                  label={"Nama"}
+                  error={errors.nama ? true : false}
+                  helperText={errors.nama ? 'Inputan Salah' : ''}
+                  fullWidth
+                  onChange={onChange}
+                  value={value} />
+              )} />
+            <TextField
+              margin="normal"
+              label={"Harga"}
+              fullWidth
+              type="number"
+              slotProps={{
+                input: {
+                  startAdornment: <InputAdornment position="start">Rp</InputAdornment>
+                }
+              }}
+              //@ts-ignore
+              onChange={(e) => setHarga(e.target.value)}
+              value={harga}
+              disabled={inputWilayah == null} />
+            <TextField
+              margin="normal"
+              label={"Bruto"}
+              disabled={inputWilayah == null}
+              fullWidth
+              type="number"
+              slotProps={{
+                input: {
+                  endAdornment: <InputAdornment position="end">Kg</InputAdornment>
+                }
+              }}
+              //@ts-ignore
+              onChange={(e) => setBruto(e.target.value)}
+              value={bruto} />
+            <Typography variant="body1">Netto : {netto} Kg</Typography>
+            <Typography variant="body1">Jumlah Harga: Rp.{jumlahHarga}</Typography>
+            <Button
+              variant="contained"
+              sx={{ margin: '20px' }}
+              disabled={harga == 0 || bruto == 0}
+              endIcon={<Save />}
+              onClick={handleSubmit(handleNext)}>
+              Lanjutkan
+            </Button>
+          </Box>
+          <Stack width='400px' justifyContent='space-between'>
+            <PreviewPrint
+              dataPembelian={jumlahPembelian}
+              dataBiaya={dataBiaya}
+              biayaAkhir={biayaAkhir}
+              jumlahTotal={jumlahTotal}
+              totalAkhir={totalAkhir}
+            />
+            <PrintPage
+              dataPembelian={jumlahPembelian}
+              dataBiaya={dataBiaya}
+              biayaAkhir={biayaAkhir}
+              jumlahTotal={jumlahTotal}
+              totalAkhir={totalAkhir}
+              handleOnlySave={handleOnlySave}
+            />
           </Stack>
         </Stack>
-      )}
+      </Box>
     </Box >
   )
 }

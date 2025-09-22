@@ -161,22 +161,22 @@ export default function Wilayah() {
     },
     {
       field: 'kondisi',
-      headerName: 'Kondisi',
+      headerName: 'Berat Keranjang',
       width: 150
     },
     {
       field: 'value_kondisi',
-      headerName: 'Dari',
+      headerName: 'Dari(Kg)',
       width: 100
     },
     {
       field: 'netto_kondisi',
-      headerName: 'Potongan Netto Kondisi',
+      headerName: 'Potongan Netto Kondisi(Kg)',
       width: 200
     },
     {
       field: 'netto_default',
-      headerName: 'Potongan Netto Awal',
+      headerName: 'Potongan Netto Awal(Kg)',
       width: 200
     },
     {

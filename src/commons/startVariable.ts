@@ -13,7 +13,7 @@ export async function startVariable() {
   const store = await load('settings.json')
   const db = await Database.load('sqlite:test.db')
 
-  const biaya = store.get<biayaPembelian>('biaya_pembelian')
+  const biaya = await store.get<biayaPembelian>('biaya_pembelian')
 
   if (biaya == undefined) {
     await store.set('biaya_pembelian', {
