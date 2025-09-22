@@ -180,11 +180,11 @@ export default function DataPembelian() {
           initialState={{
             pagination: {
               paginationModel: {
-                pageSize: 20,
+                pageSize: 10,
               },
             },
           }}
-          pageSizeOptions={[20]}
+          pageSizeOptions={[10]}
           rowHeight={35}
           disableRowSelectionOnClick
         />

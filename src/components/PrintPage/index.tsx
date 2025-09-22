@@ -1,5 +1,9 @@
-import { Print } from "@mui/icons-material";
-import { Box, Button, Stack, Typography } from "@mui/material";
+import Save from "@mui/icons-material/Save";
+import Print from "@mui/icons-material/Print";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Stack from "@mui/material/Stack";
+import Typography from "@mui/material/Typography";
 import Database from "@tauri-apps/plugin-sql";
 import { useEffect, useRef, useState } from "react";
 import { useReactToPrint } from "react-to-print"
@@ -42,24 +46,21 @@ type PrintPageProps = {
   jumlahTotal: jumlahTotalProps
   totalAkhir: number
   handleOnlySave: () => void
-  handleClose: () => void
 }
 
 export default function PrintPage(props: PrintPageProps) {
 
-  const { dataPembelian, dataBiaya, biayaAkhir, jumlahTotal, totalAkhir, handleOnlySave, handleClose } = props
+  const { dataPembelian, dataBiaya, biayaAkhir, jumlahTotal, totalAkhir, handleOnlySave } = props
 
   const [kode, setKode] = useState('')
 
   const date = new Date()
   const contentRef = useRef(null);
 
-  const reactToPrint = useReactToPrint({ contentRef })
+  const reactToPrint = useReactToPrint({ contentRef, onAfterPrint: () => { handleOnlySave() } })
 
   async function handlePrint() {
     reactToPrint()
-    handleClose()
-    handleOnlySave()
   }
 
   async function getData() {
@@ -69,23 +70,23 @@ export default function PrintPage(props: PrintPageProps) {
   }
 
   useEffect(() => {
-    if (dataPembelian != undefined) {
+    if (dataPembelian.length != 0) {
       getData()
     }
   }, [dataPembelian])
 
   return (
     <Box>
-      <Box sx={{ border: '2px solid black' }}>
-        <Box ref={contentRef}>
-          <Stack marginTop='200px' justifyContent='space-between'>
+      <Box sx={{ border: '2px solid black' }} display='none' >
+        <Box ref={contentRef} >
+          <Stack marginTop='200px' justifyContent='space-between' height='750px'>
             <Box>
               <Stack justifyContent='space-between' direction='row' sx={{ padding: '10px' }}>
                 <Box>
                   <Typography variant="body2">Kode : {kode}</Typography>
                   <Typography variant="body2">Tanggal : {`${date.getDate()}-${date.getMonth() + 1}-${date.getFullYear()}`}</Typography>
                 </Box>
-                <Typography variant="body2">Kepada : {dataPembelian[0].nama}</Typography>
+                <Typography variant="body2">Kepada : {dataPembelian.length != 0 ? dataPembelian[0].nama : ''}</Typography>
               </Stack>
               <Stack direction='row' sx={{ border: '2px solid black' }} justifyContent='space-between'>
                 <Typography variant="body2">GIRIK</Typography>
@@ -104,36 +105,41 @@ export default function PrintPage(props: PrintPageProps) {
                 </Stack>
               ))}
             </Box>
-            <Box>
-              <Stack direction='row' sx={{ border: '2px solid black' }} justifyContent='space-between'>
-                <Typography variant="body2">JUMLAH</Typography>
-                <Typography variant="body2">Rp. {jumlahTotal.harga}</Typography>
-              </Stack>
-              <Stack direction='row'>
-                <Typography variant="body2">JUMLAH KERANJANG : {dataPembelian.length}</Typography>
-              </Stack>
-              <Stack direction='row' justifyContent='space-between'>
-                <Typography variant="body2">ADMINISTRASI     : Rp.{dataBiaya?.administrasi}</Typography>
-                <Typography variant="body2">Rp. {biayaAkhir.administrasi}</Typography>
-              </Stack>
-              <Stack direction='row' justifyContent='space-between'>
-                <Typography variant="body2">PAJAK : {dataBiaya?.pajak}%</Typography>
-                <Typography variant="body2">Rp. {biayaAkhir.pajak}</Typography>
-              </Stack>
-              <Stack direction='row' justifyContent='space-between'>
-                <Typography variant="body2">ROKOK : Rp. {dataBiaya?.rokok}</Typography>
-                <Typography variant="body2">x {biayaAkhir.jumlah_rokok}</Typography>
-                <Typography variant="body2">Rp. {biayaAkhir.rokok}</Typography>
-              </Stack>
-              <Stack direction='row' justifyContent='space-between'>
-                <Typography variant="body2">BAYAR : </Typography>
-                <Typography variant="body2">Rp. {totalAkhir}</Typography>
-              </Stack>
-            </Box>
+            {dataPembelian.length != 0 && (
+              <Box>
+                <Stack direction='row' sx={{ border: '2px solid black' }} justifyContent='space-between'>
+                  <Typography variant="body2">JUMLAH</Typography>
+                  <Typography variant="body2">Rp. {jumlahTotal.harga}</Typography>
+                </Stack>
+                <Stack direction='row'>
+                  <Typography variant="body2">JUMLAH KERANJANG : {dataPembelian.length}</Typography>
+                </Stack>
+                <Stack direction='row' justifyContent='space-between'>
+                  <Typography variant="body2">ADMINISTRASI     : Rp.{dataBiaya?.administrasi}</Typography>
+                  <Typography variant="body2">Rp. {biayaAkhir.administrasi}</Typography>
+                </Stack>
+                <Stack direction='row' justifyContent='space-between'>
+                  <Typography variant="body2">PAJAK : {dataBiaya?.pajak}%</Typography>
+                  <Typography variant="body2">Rp. {biayaAkhir.pajak}</Typography>
+                </Stack>
+                <Stack direction='row' justifyContent='space-between'>
+                  <Typography variant="body2">ROKOK : Rp. {dataBiaya?.rokok}</Typography>
+                  <Typography variant="body2">x {biayaAkhir.jumlah_rokok}</Typography>
+                  <Typography variant="body2">Rp. {biayaAkhir.rokok}</Typography>
+                </Stack>
+                <Stack direction='row' justifyContent='space-between'>
+                  <Typography variant="body2">BAYAR : </Typography>
+                  <Typography variant="body2">Rp. {totalAkhir}</Typography>
+                </Stack>
+              </Box>
+            )}
           </Stack>
         </Box>
       </Box>
-      <Button sx={{ marginTop: '20px' }} onClick={handlePrint} startIcon={<Print />}>Print & Simpan</Button>
+      <Stack marginTop='20px' direction='row' justifyContent='space-between'>
+        <Button onClick={handleOnlySave} startIcon={<Save />}>Hanya Simpan</Button>
+        <Button onClick={handlePrint} endIcon={<Print />}>Print & Simpan</Button>
+      </Stack>
     </Box>
   )
 }

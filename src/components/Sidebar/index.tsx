@@ -3,14 +3,12 @@ import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 import Drawer from '@mui/material/Drawer';
-import IconButton from '@mui/material/IconButton';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
 import Dashboard from '@mui/icons-material/Dashboard';
 import Dataset from '@mui/icons-material/Dataset';
 import Input from '@mui/icons-material/Input';
@@ -22,8 +20,8 @@ import PointOfSale from '@mui/icons-material/PointOfSale';
 import Redeem from '@mui/icons-material/Redeem';
 import Sell from '@mui/icons-material/Sell';
 import { useNavigate } from 'react-router-dom';
-import Menu from '@mui/icons-material/Menu';
 import { AccountBox, Build, Map } from '@mui/icons-material';
+import ToolbarHeader from './components/ToolbarHeader';
 
 type SidebarProps = {
   drawerWidth: number
@@ -182,20 +180,7 @@ export default function Sidebar({ drawerWidth }: SidebarProps) {
           ml: { sm: `${drawerWidth}px` },
         }}
       >
-        <Toolbar>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            edge="start"
-            onClick={handleDrawerToggle}
-            sx={{ mr: 2, display: { sm: 'none' } }}
-          >
-            <Menu />
-          </IconButton>
-          <Typography variant="h6" noWrap component="div">
-            Responsive drawer
-          </Typography>
-        </Toolbar>
+        <ToolbarHeader handleDrawer={handleDrawerToggle} />
       </AppBar>
 
       <Box
