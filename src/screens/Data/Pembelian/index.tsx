@@ -136,7 +136,11 @@ export default function DataPembelian() {
             //@ts-ignore
             onChange={(e) => setFilterNomer(e.target.value)}
             value={filterNomer} />
-          {filterNomer != 0 && <Button endIcon={<Search />} onClick={handleFilterNomer} />}
+          {filterNomer != 0 &&
+            <Button onClick={handleFilterNomer} >
+              <Search />
+            </Button>
+          }
         </Stack>
         <Stack direction='row' gap='20px' alignItems='center'>
           <FormControl sx={{ width: '200px' }}>
@@ -151,12 +155,19 @@ export default function DataPembelian() {
               ))}
               <MenuItem value={0}></MenuItem>
             </Select>
-            {filterKode != 0 && <Button endIcon={<Search />} onClick={handleFilterKode} />}
+            {filterKode != 0 &&
+              <Button onClick={handleFilterKode} >
+                <Search />
+              </Button>
+            }
           </FormControl>
         </Stack>
         <Stack direction='row' gap='20px' alignItems='center'>
           <TextField label='Nama' onChange={(e) => setFilterNama(e.target.value)} value={filterNama} />
-          {filterNama != '' && <Button endIcon={<Search />} onClick={handleFilterNama} />}
+          {filterNama != '' && <Button onClick={handleFilterNama} >
+            <Search />
+          </Button>
+          }
         </Stack>
         {(filterKode != 0 || filterNomer != 0 || filterNama != '') &&
           <Button onClick={handleDeleteFilter}>Hapus Filter</Button>
