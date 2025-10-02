@@ -39,7 +39,7 @@ interface kodeProps {
   aktif: boolean
 }
 
-export default function Kode() {
+export default function KodePembelian() {
 
   const [openModal, setOpenModal] = useState(false)
   const [inputId, setInputId] = useState(0)
@@ -53,8 +53,8 @@ export default function Kode() {
   const [refresh, setRefresh] = useState(false)
 
   async function getData() {
-    const db = await Database.load('sqlite:test.db')
-    setDataKode(await db.select('SELECT * FROM Kode'))
+    const db = await Database.load('sqlite:main.db')
+    setDataKode(await db.select('SELECT * FROM Kode_Pembelian'))
   }
 
   useEffect(() => {
@@ -81,12 +81,12 @@ export default function Kode() {
   }
 
   async function handleSubmitKode() {
-    const db = await Database.load('sqlite:test.db')
+    const db = await Database.load('sqlite:main.db')
     if (action == "Edit") {
-      await db.execute('UPDATE Kode SET kode = $1, aktif = $2 WHERE id = $3', [inputKode, inputAktif, inputId])
+      await db.execute('UPDATE Kode_Pembelian SET kode = $1, aktif = $2 WHERE id = $3', [inputKode, inputAktif, inputId])
     }
     if (action == "Tambah") {
-      await db.execute("INSERT INTO Kode (kode,aktif) VALUES ($1,$2)", [inputKode, inputAktif])
+      await db.execute("INSERT INTO Kode_Pembelian (kode,aktif) VALUES ($1,$2)", [inputKode, inputAktif])
     }
     handleCloseModal()
     setOpenSnack(true)
@@ -109,8 +109,8 @@ export default function Kode() {
   }
 
   async function handleDeleteKode() {
-    const db = await Database.load('sqlite:test.db')
-    await db.execute('DELETE FROM Kode WHERE id = $1', [inputId])
+    const db = await Database.load('sqlite:main.db')
+    await db.execute('DELETE FROM Kode_Pembelian WHERE id = $1', [inputId])
     setOpenSnack(true)
     setOpenDial(false)
     setRefresh(!refresh)
@@ -155,7 +155,7 @@ export default function Kode() {
           variant='filled'
           sx={{ width: '100%' }}
         >
-          Berhasil {action} Kode
+          Berhasil {action} Kode Pembelian
         </Alert>
       </Snackbar>
       <Dialog
@@ -172,7 +172,7 @@ export default function Kode() {
       </Dialog>
       <Modal open={openModal} onClose={handleCloseModal}>
         <Stack sx={modalStyle} gap='20px'>
-          <Typography variant='h4'>{action} Kode</Typography>
+          <Typography variant='h4'>{action} Kode Pembelian</Typography>
           <TextField label='Kode' value={inputKode} onChange={(e) => setInputKode(e.target.value)} />
           <FormControl fullWidth>
             <FormLabel>Status</FormLabel>
@@ -191,8 +191,8 @@ export default function Kode() {
         </Stack>
       </Modal>
       <Stack direction='row' justifyContent='space-between'>
-        <Typography variant='h4'>Kelola Kode</Typography>
-        <Button startIcon={<Add />} onClick={handleAddKode}>Tambah Kode</Button>
+        <Typography variant='h4'>Kelola Kode Pembelian</Typography>
+        <Button startIcon={<Add />} onClick={handleAddKode}>Tambah Kode Pembelian</Button>
       </Stack>
       <div style={{ margin: "20px 0", display: 'flex', flexDirection: 'column' }}>
         <DataGrid
