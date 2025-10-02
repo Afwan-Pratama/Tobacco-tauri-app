@@ -66,37 +66,53 @@ const router = createHashRouter([
         lazy: makeLazyFunc(import('./screens/Dashboard'))
       },
       {
-        path: 'input-pembelian',
+        path: 'input-pembelian/:id',
         lazy: makeLazyFunc(import('./screens/Input/Pembelian'))
       },
       {
-        path: 'input-penjualan',
+        path: 'input-penjualan/:id',
         lazy: makeLazyFunc(import('./screens/Input/Penjualan'))
       },
       {
-        path: 'data-pembelian',
+        path: 'data-pembelian/:id',
         lazy: makeLazyFunc(import('./screens/Data/Pembelian'))
       },
       {
-        path: 'data-penjualan',
+        path: 'data-penjualan/:id',
         lazy: makeLazyFunc(import('./screens/Data/Penjualan'))
       },
       {
-        path: 'data-laba-rugi',
-        lazy: makeLazyFunc(import('./screens/Data/LabaRugi'))
+        path: 'laporan-laba-rugi',
+        lazy: makeLazyFunc(import('./screens/Report/LabaRugi'))
       },
       {
-        path: 'kelola-bonus',
-        lazy: makeLazyFunc(import('./screens/Manage/Bonus'))
+        path: 'laporan-bonus',
+        lazy: makeLazyFunc(import('./screens/Report/Bonus'))
       },
       {
-        path: 'kelola-kode',
-        lazy: makeLazyFunc(import('./screens/Manage/Kode'))
+        path: 'kelola-kode-pembelian',
+        lazy: makeLazyFunc(import('./screens/Manage/KodePembelian'))
+      },
+      {
+        path: 'kelola-kode-penjualan',
+        lazy: makeLazyFunc(import('./screens/Manage/KodePenjualan'))
       },
       {
         path: 'kelola-wilayah',
         lazy: makeLazyFunc(import('./screens/Manage/Wilayah'))
       },
+      {
+        path: 'nota-khusus',
+        lazy: makeLazyFunc(import('./screens/NotaKhusus'))
+      },
+      // {
+      //   path: 'input-ket-pembelian',
+      //   lazy: makeLazyFunc(import('./screens/InputKetPembelian'))
+      // },
+      // {
+      //   path: 'data-ket-pembelian',
+      //   lazy: makeLazyFunc(import('./screens/Data/KeteranganPembelian'))
+      // },
       {
         path: '*',
         element: <Navigate replace to="/" />

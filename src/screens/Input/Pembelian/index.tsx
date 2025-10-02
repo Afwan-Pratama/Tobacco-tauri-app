@@ -4,25 +4,19 @@ import Button from "@mui/material/Button"
 import FormControl from "@mui/material/FormControl"
 import FormHelperText from "@mui/material/FormHelperText"
 import InputAdornment from "@mui/material/InputAdornment"
-import InputLabel from "@mui/material/InputLabel"
-import MenuItem from "@mui/material/MenuItem"
-import Select from "@mui/material/Select"
 import TextField from "@mui/material/TextField"
 import Typography from "@mui/material/Typography";
 import Database from "@tauri-apps/plugin-sql";
-import { useEffect, useState } from "react";
-import { Controller, SubmitHandler, useForm } from "react-hook-form";
+import Autocomplete from "@mui/material/Autocomplete";
+import { useEffect, useMemo, useState } from "react";
 import { load } from "@tauri-apps/plugin-store"
 import Stack from '@mui/material/Stack';
 import Alert from "@mui/material/Alert";
 import Snackbar, { SnackbarCloseReason } from "@mui/material/Snackbar";
 import PrintPage from "../../../components/PrintPage";
-import PreviewPrint from "./components/PreviewPrint";
-
-interface IFormInput {
-  kode_id: number
-  nama: string
-}
+import PreviewPrint from "../../../components/PreviewPrint";
+import { useParams } from "react-router-dom";
+import { dateNow } from "../../../helpers/dateNow";
 
 interface biayaPembelian {
   administrasi: number
@@ -48,32 +42,34 @@ interface wilayahProps {
 }
 
 interface pembelianProps {
-  id: number
+  no: string
   wilayah_id: number
-  kode_id: number
+  kode_id: string
   nama: string
   harga: number
   bruto: number
   netto: number
   jumlah_harga: number
+  bonus: number
+  created_date: string
 }
 
 export default function InputPembelian() {
 
-  const { control, handleSubmit, formState: { errors } } = useForm({
-    defaultValues: {
-      kode_id: 0,
-      nama: '',
-    }
-  })
+  const { id } = useParams()
 
-  const [bruto, setBruto] = useState(0)
-  const [netto, setNetto] = useState(0)
-  const [inputWilayah, setInputWilayah] = useState(null)
+  const [inputValue, setInputValue] = useState({
+    no: '',
+    kode_id: '',
+    nama: '',
+    harga: 0,
+    bruto: 0,
+    netto: 0,
+    bonus: 0,
+    created_date: ''
+  })
   const [valueWilayah, setValueWilayah] = useState<wilayahProps[]>([])
-  const [valueKode, setValueKode] = useState<{ id: number, kode: string }[]>([])
-  const [harga, setHarga] = useState(0)
-  const [jumlahHarga, setJumlahHarga] = useState(0)
+  const [valueKode, setValueKode] = useState<{ id: number, label: string }[]>([])
   const [jumlahPembelian, setJumlahPembelian] = useState<pembelianProps[]>([])
   const [fieldDisable, setFieldDisable] = useState(false)
   const [jumlahTotal, setJumlahTotal] = useState({
@@ -95,20 +91,18 @@ export default function InputPembelian() {
     jumlah_rokok: 0
   })
   const [totalAkhir, setTotalAkhir] = useState(0)
-  const [inputId, setInputId] = useState(0)
   const [openSnack, setOpenSnack] = useState(false)
+  const jumlahHarga = useMemo<number>(() => (
+    inputValue.netto > 0 ?
+      inputValue.netto * inputValue.harga :
+      0
+  ), [inputValue.harga, inputValue.netto])
 
   async function getData() {
-    const db = await Database.load('sqlite:test.db')
-    const id: { id: number }[] = await db.select('SELECT id FROM Pembelian ORDER BY id DESC LIMIT 1')
-    setValueWilayah(await db.select('SELECT * FROM Wilayah'))
-    setValueKode(await db.select('SELECT id,kode FROM Kode'))
-    if (id.length == 0) {
-      return
-    }
-    else {
-      setInputId(id[0].id + 1)
-    }
+    const db = await Database.load('sqlite:main.db')
+    const dataWilayah = await db.select<wilayahProps[]>('SELECT * FROM Wilayah WHERE id = $1', [id])
+    setValueWilayah(dataWilayah)
+    setValueKode(await db.select('SELECT id,kode AS label FROM Kode_Pembelian'))
   }
 
   async function getStore() {
@@ -119,41 +113,50 @@ export default function InputPembelian() {
   useEffect(() => {
     getData()
     getStore()
-  }, [])
+  }, [id])
 
   useEffect(() => {
-    if (inputWilayah != null) {
-      const wilayah = valueWilayah[inputWilayah]
+    if (valueWilayah.length != 0 && inputValue.bruto != 0) {
+      const wilayah = valueWilayah[0]
       switch (wilayah.kondisi) {
         case "kurang":
-          if (bruto < wilayah.value_kondisi) {
-            setNetto(bruto - wilayah.netto_kondisi)
+          if (inputValue.bruto < wilayah.value_kondisi) {
+            setInputValue({
+              ...inputValue,
+              netto: inputValue.bruto - wilayah.netto_kondisi
+            })
           } else {
-            setNetto(bruto - wilayah.netto_default)
+            setInputValue({
+              ...inputValue,
+              netto: inputValue.bruto - wilayah.netto_default
+            })
           }
           break;
         case "lebih":
-          if (bruto > wilayah.value_kondisi) {
-            setNetto(bruto - wilayah.netto_kondisi)
+          if (inputValue.bruto > wilayah.value_kondisi) {
+            setInputValue({
+              ...inputValue,
+              netto: inputValue.bruto - wilayah.netto_kondisi
+            })
           } else {
-            setNetto(bruto - wilayah.netto_default)
+            setInputValue({
+              ...inputValue,
+              netto: inputValue.bruto - wilayah.netto_default
+            })
           }
           break;
         case "tidak":
-          setNetto(bruto - wilayah.netto_default)
+          setInputValue({
+            ...inputValue,
+            netto: inputValue.bruto - wilayah.netto_default
+          })
           break;
       }
     }
-  }, [bruto])
+  }, [inputValue.bruto])
 
   useEffect(() => {
-    if (netto > 0) {
-      setJumlahHarga(harga * netto)
-    }
-  }, [{ harga, bruto }])
-
-  useEffect(() => {
-    if (dataBiaya != undefined) {
+    if (dataBiaya != undefined && jumlahPembelian.length > 0) {
       const administrasi = jumlahPembelian.length * dataBiaya?.administrasi
       const hargaTotal = jumlahPembelian.reduce((v, n) => v + n.jumlah_harga, 0)
       const jumlahRokok = Math.floor(hargaTotal / dataBiaya?.mod_rokok)
@@ -175,44 +178,51 @@ export default function InputPembelian() {
   }, [refreshTotal])
 
   function clearField() {
-    setHarga(0)
-    setBruto(0)
-    setNetto(0)
-    setJumlahHarga(0)
+    setInputValue({
+      ...inputValue,
+      no: '',
+      harga: 0,
+      bruto: 0,
+      netto: 0,
+    })
   }
 
-  const handleNext: SubmitHandler<IFormInput> = (data) => {
-    if (inputWilayah != null) {
-      setJumlahPembelian([...jumlahPembelian,
-      {
-        id: inputId,
-        wilayah_id: valueWilayah[inputWilayah].id,
-        kode_id: data.kode_id,
-        nama: data.nama,
-        harga: harga,
-        bruto: bruto,
-        netto: netto,
-        jumlah_harga: jumlahHarga
-      }
-      ])
-      setFieldDisable(true)
-      clearField()
-      setRefreshTotal(!refreshTotal)
-      setInputId(v => v += 1)
+  const handleNext = () => {
+    setJumlahPembelian([...jumlahPembelian,
+    {
+      ...inputValue,
+      wilayah_id: valueWilayah[0].id,
+      created_date: dateNow(),
+      jumlah_harga: jumlahHarga
     }
+    ])
+    setFieldDisable(true)
+    clearField()
+    setRefreshTotal(!refreshTotal)
   }
 
   async function sendToDB() {
-    const db = await Database.load('sqlite:test.db')
+    const db = await Database.load('sqlite:main.db')
+    const getKodeId = await db.select<{ id: number }[]>('SELECT id FROM Kode_Pembelian WHERE kode = $1', [jumlahPembelian[0].kode_id])
     for (let i = 0; i < jumlahPembelian.length; i++) {
       const pembelian = jumlahPembelian[i]
-      await db.execute('INSERT INTO Pembelian (wilayah_id,kode_id,nama,harga,bruto,netto,jumlah_harga) VALUES ($1,$2,$3,$4,$5,$6,$7)',
-        [pembelian.wilayah_id, pembelian.kode_id, pembelian.nama, pembelian.harga, pembelian.bruto, pembelian.netto, pembelian.jumlah_harga])
+      await db.execute('INSERT INTO Pembelian (wilayah_id,kode_id,nama,harga,bruto,netto,jumlah_harga,no,bonus,created_date) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)',
+        [
+          pembelian.wilayah_id,
+          getKodeId[0].id,
+          pembelian.nama,
+          pembelian.harga,
+          pembelian.bruto,
+          pembelian.netto,
+          pembelian.jumlah_harga,
+          pembelian.no,
+          pembelian.bonus,
+          pembelian.created_date
+        ])
     }
   }
 
   function afterSend() {
-    setInputWilayah(null)
     setTotalAkhir(0)
     setJumlahTotal({
       bruto: 0,
@@ -256,83 +266,57 @@ export default function InputPembelian() {
           Berhasil Menyimpan Data
         </Alert>
       </Snackbar>
-      <Typography variant="h4">Input Pembelian</Typography>
+      {valueWilayah.length != 0 && <Typography variant="h4">Input Pembelian {valueWilayah[0].nama}</Typography>}
       <Box sx={{ marginBottom: '20px' }}>
         <Stack
           direction='row'
           component={"section"}
+          gap={'50px'}
           justifyContent='space-between'
           sx={{ p: 2, border: '2px solid black', borderRadius: 1, marginY: '20px' }}>
           <Box>
+            <TextField
+              autoFocus
+              margin="normal"
+              label="No."
+              fullWidth
+              onChange={(e) => setInputValue({
+                ...inputValue,
+                no: e.target.value.toUpperCase()
+              })}
+              value={inputValue.no}
+            />
 
             <FormControl fullWidth margin="normal">
-              <InputLabel >Wilayah</InputLabel>
-              <Select
+              <Autocomplete
+                disablePortal
+                options={valueKode}
+                autoHighlight
                 disabled={fieldDisable}
-                label="Wilayah"
-                //@ts-ignore
-                onChange={(e) => setInputWilayah(e.target.value)}
-                value={inputWilayah}
-              >
-                {valueWilayah.map((v, i) => (
-                  <MenuItem value={i}>{v.nama}</MenuItem>
-                ))
-                }
-              </Select>
+                inputValue={inputValue.kode_id}
+                onChange={(_e, d) => setInputValue({
+                  ...inputValue,
+                  kode_id: d === null || d === undefined ? '' : d.label
+                })}
+                renderInput={(params) => <TextField {...params} label="Kode" />}
+              />
               {
-                valueWilayah.length == 0 && (
-                  <FormHelperText error={true} >Data Wilayah Masih Kosong</FormHelperText>
+                valueKode.length == 0 && (
+                  <FormHelperText error={true} >Data Kode Pembelian Masih Kosong</FormHelperText>
                 )
               }
             </FormControl>
 
-            <Controller
-              name="kode_id"
-              control={control}
-              rules={{ required: true }}
-              render={({ field: { onChange, value } }) => (
-                <FormControl fullWidth margin="normal">
-                  <InputLabel >Kode</InputLabel>
-                  <Select
-                    error={errors.kode_id ? true : false}
-                    disabled={fieldDisable}
-                    label="Kode"
-                    onChange={onChange}
-                    value={value}
-                  >
-                    {valueKode.map((v) => (
-                      <MenuItem value={v.id}>{v.kode}</MenuItem>
-                    ))
-                    }
-                  </Select>
-                  {
-                    errors.kode_id && (
-                      <FormHelperText error={errors.kode_id ? true : false}>Inputan masih kosong</FormHelperText>
-                    )
-                  }
-                  {
-                    valueKode.length == 0 && (
-                      <FormHelperText error={true} >Data Kode Masih Kosong</FormHelperText>
-                    )
-                  }
-                </FormControl>
-
-              )} />
-            <Controller
-              name="nama"
-              rules={{ required: true }}
-              control={control}
-              render={({ field: { onChange, value } }) => (
-                <TextField
-                  disabled={fieldDisable}
-                  margin="normal"
-                  label={"Nama"}
-                  error={errors.nama ? true : false}
-                  helperText={errors.nama ? 'Inputan Salah' : ''}
-                  fullWidth
-                  onChange={onChange}
-                  value={value} />
-              )} />
+            <TextField
+              disabled={fieldDisable}
+              margin="normal"
+              label={"Nama"}
+              fullWidth
+              onChange={(e) => setInputValue({
+                ...inputValue,
+                nama: e.target.value.toUpperCase()
+              })}
+              value={inputValue.nama} />
             <TextField
               margin="normal"
               label={"Harga"}
@@ -343,14 +327,16 @@ export default function InputPembelian() {
                   startAdornment: <InputAdornment position="start">Rp</InputAdornment>
                 }
               }}
-              //@ts-ignore
-              onChange={(e) => setHarga(e.target.value)}
-              value={harga}
-              disabled={inputWilayah == null} />
+              onChange={(e) => setInputValue({
+                ...inputValue,
+                //@ts-ignore
+                harga: e.target.value
+              })}
+              value={inputValue.harga == 0 ? '' : inputValue.harga}
+            />
             <TextField
               margin="normal"
               label={"Bruto"}
-              disabled={inputWilayah == null}
               fullWidth
               type="number"
               slotProps={{
@@ -358,21 +344,47 @@ export default function InputPembelian() {
                   endAdornment: <InputAdornment position="end">Kg</InputAdornment>
                 }
               }}
-              //@ts-ignore
-              onChange={(e) => setBruto(e.target.value)}
-              value={bruto} />
-            <Typography variant="body1">Netto : {netto} Kg</Typography>
+              onChange={(e) => setInputValue({
+                ...inputValue,
+                //@ts-ignore
+                bruto: e.target.value
+              })}
+              value={inputValue.bruto == 0 ? '' : inputValue.bruto} />
+            <TextField
+              margin="normal"
+              label={"Bonus"}
+              fullWidth
+              type="number"
+              slotProps={{
+                input: {
+                  startAdornment: <InputAdornment position="start">Rp.</InputAdornment>
+                }
+              }}
+              onChange={(e) => setInputValue({
+                ...inputValue,
+                //@ts-ignore
+                bonus: e.target.value
+              })}
+              value={inputValue.bonus == 0 ? '' : inputValue.bonus} />
+            <Typography variant="body1">Netto : {inputValue.netto} Kg</Typography>
             <Typography variant="body1">Jumlah Harga: Rp.{jumlahHarga}</Typography>
             <Button
               variant="contained"
               sx={{ margin: '20px' }}
-              disabled={harga == 0 || bruto == 0}
+              disabled={
+                inputValue.harga == 0 ||
+                inputValue.bruto == 0 ||
+                inputValue.no == '' ||
+                inputValue.kode_id == '' ||
+                inputValue.nama == '' ||
+                inputValue.bonus == 0
+              }
               endIcon={<Save />}
-              onClick={handleSubmit(handleNext)}>
+              onClick={handleNext}>
               Lanjutkan
             </Button>
           </Box>
-          <Stack width='400px' justifyContent='space-between'>
+          <Stack width='500px' justifyContent='space-between'>
             <PreviewPrint
               dataPembelian={jumlahPembelian}
               dataBiaya={dataBiaya}
