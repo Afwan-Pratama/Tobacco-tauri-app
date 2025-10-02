@@ -1,18 +1,18 @@
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import Database from "@tauri-apps/plugin-sql";
-import { useEffect, useState } from "react";
 
 interface pembelianProps {
-  id: number
+  no: string
   wilayah_id: number
-  kode_id: number
+  kode_id: string
   nama: string
   harga: number
   bruto: number
   netto: number
   jumlah_harga: number
+  bonus: number
+  created_date: string
 }
 
 interface biayaPembelianProps {
@@ -47,30 +47,14 @@ export default function PreviewPrint(props: PrintPageProps) {
 
   const { dataPembelian, dataBiaya, biayaAkhir, jumlahTotal, totalAkhir } = props
 
-  const [kode, setKode] = useState('')
-
-  const date = new Date()
-
-  async function getData() {
-    const db = await Database.load('sqlite:test.db')
-    const getKode: { kode: string }[] = await db.select('SELECT kode from Kode WHERE id = $1', [dataPembelian[0].kode_id])
-    setKode(getKode[0].kode)
-  }
-
-  useEffect(() => {
-    if (dataPembelian.length != 0) {
-      getData()
-    }
-  }, [dataPembelian])
-
   return (
     <Box sx={{ border: '2px solid black' }} height='100%'>
       <Stack justifyContent='space-between' height='100%'>
         <Box>
           <Stack justifyContent='space-between' direction='row' sx={{ padding: '10px' }}>
             <Box>
-              <Typography variant="body2">Kode : {kode}</Typography>
-              <Typography variant="body2">Tanggal : {`${date.getDate()}-${date.getMonth() + 1}-${date.getFullYear()}`}</Typography>
+              <Typography variant="body2">Kode : {dataPembelian.length != 0 ? dataPembelian[0].kode_id : ''}</Typography>
+              <Typography variant="body2">Tanggal : {dataPembelian.length != 0 ? dataPembelian[0].created_date : ''}</Typography>
             </Box>
             <Typography variant="body2">Kepada : {dataPembelian.length != 0 ? dataPembelian[0].nama : ''}</Typography>
           </Stack>
@@ -83,7 +67,7 @@ export default function PreviewPrint(props: PrintPageProps) {
           </Stack>
           {dataPembelian.map((v, i: number) => (
             <Stack key={i} direction='row' justifyContent='space-between'>
-              <Typography variant="body2">{v.id}</Typography>
+              <Typography variant="body2">{v.no}</Typography>
               <Typography variant="body2">{v.bruto}</Typography>
               <Typography variant="body2">{v.netto}</Typography>
               <Typography variant="body2">x Rp. {v.harga}</Typography>

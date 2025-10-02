@@ -50,23 +50,22 @@ export default function Wilayah() {
     netto_default: 0
   })
   const [inputId, setInputId] = useState(0)
-  const [inputKode, setInputKode] = useState('')
+  const [inputNama, setInputNama] = useState('')
   const [dataWilayah, setDataWilayah] = useState<wilayahProps[]>([])
   const [action, setAction] = useState("")
   const [openDial, setOpenDial] = useState(false)
   const [openSnack, setOpenSnack] = useState(false)
-  const [refresh, setRefresh] = useState(false)
   const [disableDari, setDisableDari] = useState(true)
   const [disableButton, setDisableButton] = useState(true)
 
   async function getData() {
-    const db = await Database.load('sqlite:test.db')
+    const db = await Database.load('sqlite:main.db')
     setDataWilayah(await db.select('SELECT * FROM Wilayah'))
   }
 
   useEffect(() => {
     getData()
-  }, [refresh])
+  }, [])
 
   useEffect(() => {
     if (inputWilayah.kondisi === 'tidak' || inputWilayah.kondisi === '') {
@@ -102,10 +101,10 @@ export default function Wilayah() {
   }
 
   async function handleSubmit() {
-    const db = await Database.load('sqlite:test.db')
+    const db = await Database.load('sqlite:main.db')
     if (action == "Edit") {
-      await db.execute("Update Wilayah SET nama = $1, kondisi = $2, value_kondisi = $3, netto_kondisi = $4, netto_default = $5",
-        [inputWilayah.nama, inputWilayah.kondisi, inputWilayah.value_kondisi, inputWilayah.netto_kondisi, inputWilayah.netto_default])
+      await db.execute("Update Wilayah SET nama = $1, kondisi = $2, value_kondisi = $3, netto_kondisi = $4, netto_default = $5 WHERE id = $6",
+        [inputWilayah.nama, inputWilayah.kondisi, inputWilayah.value_kondisi, inputWilayah.netto_kondisi, inputWilayah.netto_default, inputId])
 
     }
     if (action == "Tambah") {
@@ -114,7 +113,7 @@ export default function Wilayah() {
     }
     handleCloseModal()
     setOpenSnack(true)
-    setRefresh(!refresh)
+    window.location.reload()
   }
 
   function handleClickUpdate(params: wilayahProps) {
@@ -130,19 +129,19 @@ export default function Wilayah() {
     setInputId(params.id)
   }
 
-  function handleClickDelete(id: number, kode: string) {
+  function handleClickDelete(id: number, nama: string) {
     setAction("Hapus")
-    setInputKode(kode)
+    setInputNama(nama)
     setInputId(id)
     setOpenDial(true)
   }
 
   async function handleDeleteKode() {
-    const db = await Database.load('sqlite:test.db')
+    const db = await Database.load('sqlite:main.db')
     await db.execute('DELETE FROM Wilayah WHERE id = $1', [inputId])
     setOpenSnack(true)
     setOpenDial(false)
-    setRefresh(!refresh)
+    window.location.reload()
   }
 
   function handleCloseSnack(_event: React.SyntheticEvent | Event,
@@ -151,6 +150,14 @@ export default function Wilayah() {
       return;
     }
     setOpenSnack(false)
+  }
+
+  function handleChangeKondisi(param: string) {
+    if (param === 'tidak') {
+      setInputWilayah({ ...inputWilayah, kondisi: param, value_kondisi: 0, netto_kondisi: 0 })
+    } else {
+      setInputWilayah({ ...inputWilayah, kondisi: param })
+    }
   }
 
   const columns: GridColDef[] = [
@@ -184,7 +191,7 @@ export default function Wilayah() {
       type: 'actions',
       getActions: (params) => [
         <GridActionsCellItem icon={<EditSquare />} label='Edit' onClick={() => handleClickUpdate(params.row)} />,
-        <GridActionsCellItem icon={<Delete />} label='Hapus' onClick={() => handleClickDelete(params.row.id, params.row.kode)} />
+        <GridActionsCellItem icon={<Delete />} label='Hapus' onClick={() => handleClickDelete(params.row.id, params.row.nama)} />
       ]
     }
   ];
@@ -206,7 +213,7 @@ export default function Wilayah() {
         onClose={() => setOpenDial(false)}
       >
         <DialogTitle >
-          {`Anda Yakin Ingin Menghapus Wilayah ${inputKode} ?`}
+          {`Anda Yakin Ingin Menghapus Wilayah ${inputNama} ?`}
         </DialogTitle>
         <DialogActions>
           <Button onClick={() => setOpenDial(false)}>Tidak</Button>
@@ -226,7 +233,7 @@ export default function Wilayah() {
             <InputLabel>Kondisi</InputLabel>
             <Select
               label="Kondisi"
-              onChange={(e) => setInputWilayah({ ...inputWilayah, kondisi: e.target.value })}
+              onChange={(e) => handleChangeKondisi(e.target.value)}
               value={inputWilayah.kondisi}
             >
               <MenuItem value={'lebih'}>Lebih</MenuItem>

@@ -63,6 +63,7 @@ export default function ToolbarHeader(props: ToolbarHeaderProps) {
     }
     setOpenSnack(false)
   }
+
   async function handleCekUpdate() {
     setLoading(true)
     const update = await check()
@@ -127,9 +128,11 @@ export default function ToolbarHeader(props: ToolbarHeaderProps) {
           </Typography>
         </Box>
         <Box>
-          <IconButton onClick={handleClick}>
-            <Autorenew />
-          </IconButton>
+          <Button variant='outlined' sx={{
+            color: 'white'
+          }} onClick={handleClick} startIcon={<Autorenew />}>
+            Update
+          </Button>
           <Menu
             anchorEl={anchorEl}
             open={open}

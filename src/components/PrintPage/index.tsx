@@ -4,19 +4,20 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import Database from "@tauri-apps/plugin-sql";
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import { useReactToPrint } from "react-to-print"
 
 interface pembelianProps {
-  id: number
+  no: string
   wilayah_id: number
-  kode_id: number
+  kode_id: string
   nama: string
   harga: number
   bruto: number
   netto: number
   jumlah_harga: number
+  bonus: number
+  created_date: string
 }
 
 interface biayaPembelianProps {
@@ -52,28 +53,18 @@ export default function PrintPage(props: PrintPageProps) {
 
   const { dataPembelian, dataBiaya, biayaAkhir, jumlahTotal, totalAkhir, handleOnlySave } = props
 
-  const [kode, setKode] = useState('')
-
-  const date = new Date()
   const contentRef = useRef(null);
 
-  const reactToPrint = useReactToPrint({ contentRef, onAfterPrint: () => { handleOnlySave() } })
+  const reactToPrint = useReactToPrint({ contentRef })
 
   async function handlePrint() {
     reactToPrint()
+    handleOnlySave()
   }
 
-  async function getData() {
-    const db = await Database.load('sqlite:test.db')
-    const getKode: { kode: string }[] = await db.select('SELECT kode from Kode WHERE id = $1', [dataPembelian[0].kode_id])
-    setKode(getKode[0].kode)
+  async function handleOnlyPrint() {
+    reactToPrint()
   }
-
-  useEffect(() => {
-    if (dataPembelian.length != 0) {
-      getData()
-    }
-  }, [dataPembelian])
 
   return (
     <Box>
@@ -83,8 +74,8 @@ export default function PrintPage(props: PrintPageProps) {
             <Box>
               <Stack justifyContent='space-between' direction='row' sx={{ padding: '10px' }}>
                 <Box>
-                  <Typography variant="body2">Kode : {kode}</Typography>
-                  <Typography variant="body2">Tanggal : {`${date.getDate()}-${date.getMonth() + 1}-${date.getFullYear()}`}</Typography>
+                  <Typography variant="body2">Kode : {dataPembelian.length != 0 ? dataPembelian[0].nama : ''}</Typography>
+                  <Typography variant="body2">Tanggal : {dataPembelian.length != 0 ? dataPembelian[0].created_date : ''}</Typography>
                 </Box>
                 <Typography variant="body2">Kepada : {dataPembelian.length != 0 ? dataPembelian[0].nama : ''}</Typography>
               </Stack>
@@ -97,7 +88,7 @@ export default function PrintPage(props: PrintPageProps) {
               </Stack>
               {dataPembelian.map((v, i: number) => (
                 <Stack key={i} direction='row' justifyContent='space-between'>
-                  <Typography variant="body2">{v.id}</Typography>
+                  <Typography variant="body2">{v.no}</Typography>
                   <Typography variant="body2">{v.bruto}</Typography>
                   <Typography variant="body2">{v.netto}</Typography>
                   <Typography variant="body2">x Rp. {v.harga}</Typography>
@@ -136,10 +127,13 @@ export default function PrintPage(props: PrintPageProps) {
           </Stack>
         </Box>
       </Box>
-      <Stack marginTop='20px' direction='row' justifyContent='space-between'>
-        <Button onClick={handleOnlySave} startIcon={<Save />}>Hanya Simpan</Button>
-        <Button onClick={handlePrint} endIcon={<Print />}>Print & Simpan</Button>
-      </Stack>
+      {dataPembelian.length != 0 && (
+        <Stack marginTop='20px' direction='row' justifyContent='space-between'>
+          <Button onClick={handleOnlySave} startIcon={<Save />}>Hanya Simpan</Button>
+          <Button onClick={handleOnlyPrint} startIcon={<Print />}>Hanya Print</Button>
+          <Button onClick={handlePrint} endIcon={<Print />}>Print & Simpan</Button>
+        </Stack>
+      )}
     </Box>
   )
 }
