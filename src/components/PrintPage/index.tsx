@@ -6,6 +6,7 @@ import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { useRef } from "react";
 import { useReactToPrint } from "react-to-print"
+import { Grid } from "@mui/material";
 
 interface pembelianProps {
   no: string
@@ -70,53 +71,73 @@ export default function PrintPage(props: PrintPageProps) {
     <Box>
       <Box sx={{ border: '2px solid black' }} display='none' >
         <Box ref={contentRef} >
-          <Stack marginX='175px' marginTop='25px' justifyContent='space-between' height='400px'>
+          <Stack marginX='225px' marginTop='50px' justifyContent='space-between' height='450px'>
             <Box>
               <Stack justifyContent='space-between' direction='row' sx={{ padding: '10px' }}>
-                <Box>
-                  <Typography variant="body2">Kode : {dataPembelian.length != 0 ? dataPembelian[0].kode_id : ''}</Typography>
-                  <Typography variant="body2">Tanggal : {dataPembelian.length != 0 ? dataPembelian[0].created_date : ''}</Typography>
-                </Box>
-                <Typography variant="body2">Kepada : {dataPembelian.length != 0 ? dataPembelian[0].nama : ''}</Typography>
-              </Stack>
-              <Stack direction='row' sx={{ border: '2px solid black' }} justifyContent='space-between'>
-                <Typography variant="body2">GIRIK</Typography>
-                <Typography variant="body2">BK</Typography>
-                <Typography variant="body2">BB</Typography>
-                <Typography variant="body2">HARGA</Typography>
-                <Typography variant="body2">JUMLAH HARGA</Typography>
-              </Stack>
-              {dataPembelian.map((v, i: number) => (
-                <Stack key={i} direction='row' justifyContent='space-between'>
-                  <Typography variant="body2">{v.no}</Typography>
-                  <Typography variant="body2">{v.bruto}</Typography>
-                  <Typography variant="body2">{v.netto}</Typography>
-                  <Typography variant="body2">x Rp. {v.harga}</Typography>
-                  <Typography variant="body2">Rp. {v.jumlah_harga}</Typography>
+                <Stack>
+                  <Typography variant="caption">Kode : {dataPembelian.length != 0 ? dataPembelian[0].kode_id : ''}</Typography>
+                  <Typography variant="caption">Tanggal : {dataPembelian.length != 0 ? dataPembelian[0].created_date : ''}</Typography>
                 </Stack>
+                <Typography variant="caption">Kepada : {dataPembelian.length != 0 ? dataPembelian[0].nama : ''}</Typography>
+              </Stack>
+              <Grid container spacing={2} sx={{ border: '2px solid black' }}>
+                <Grid size={2}>
+                  <Typography variant="caption">GIRIK</Typography>
+                </Grid>
+                <Grid size={1}>
+                  <Typography variant="caption">BK</Typography>
+                </Grid>
+                <Grid size={1}>
+                  <Typography variant="caption">BB</Typography>
+                </Grid>
+                <Grid size={3}>
+                  <Typography variant="caption">HARGA</Typography>
+                </Grid>
+                <Grid size={5} textAlign='right'>
+                  <Typography variant="caption">JUMLAH HARGA</Typography>
+                </Grid>
+              </Grid>
+              {dataPembelian.map((v, i: number) => (
+                <Grid key={i} container spacing={2} >
+                  <Grid size={2}>
+                    <Typography variant="caption">{v.no}</Typography>
+                  </Grid>
+                  <Grid size={1}>
+                    <Typography variant="caption">{v.bruto}</Typography>
+                  </Grid>
+                  <Grid size={1}>
+                    <Typography variant="caption">{v.netto}</Typography>
+                  </Grid>
+                  <Grid size={3}>
+                    <Typography variant="caption">x {v.harga}</Typography>
+                  </Grid>
+                  <Grid size={5} textAlign='right'>
+                    <Typography variant="caption">{v.jumlah_harga}</Typography>
+                  </Grid>
+                </Grid>
               ))}
             </Box>
             {dataPembelian.length != 0 && (
               <Box>
                 <Stack direction='row' sx={{ border: '2px solid black' }} justifyContent='space-between'>
-                  <Typography variant="body2">JUMLAH</Typography>
-                  <Typography variant="body2">Rp. {jumlahTotal.harga}</Typography>
+                  <Typography variant="caption">JUMLAH</Typography>
+                  <Typography variant="caption">Rp. {jumlahTotal.harga}</Typography>
                 </Stack>
                 <Stack direction='row'>
-                  <Typography variant="body2">JUMLAH KERANJANG : {dataPembelian.length}</Typography>
+                  <Typography variant="caption">JUMLAH KERANJANG : {dataPembelian.length}</Typography>
                 </Stack>
                 <Stack direction='row' justifyContent='space-between'>
-                  <Typography variant="body2">LAIN-LAIN : </Typography>
-                  <Typography variant="body2">Rp. {biayaAkhir.pajak}</Typography>
+                  <Typography variant="caption">LAIN-LAIN : </Typography>
+                  <Typography variant="caption">Rp. {biayaAkhir.pajak}</Typography>
                 </Stack>
                 <Stack direction='row' justifyContent='space-between'>
-                  <Typography variant="body2">ROKOK : Rp. {dataBiaya?.rokok}</Typography>
-                  <Typography variant="body2">x {biayaAkhir.jumlah_rokok}</Typography>
-                  <Typography variant="body2">Rp. {biayaAkhir.rokok}</Typography>
+                  <Typography variant="caption">ROKOK : Rp. {dataBiaya?.rokok}</Typography>
+                  <Typography variant="caption">x {biayaAkhir.jumlah_rokok}</Typography>
+                  <Typography variant="caption">Rp. {biayaAkhir.rokok}</Typography>
                 </Stack>
                 <Stack direction='row' justifyContent='space-between'>
-                  <Typography variant="body2">BAYAR : </Typography>
-                  <Typography variant="body2">Rp. {totalAkhir}</Typography>
+                  <Typography variant="caption">BAYAR : </Typography>
+                  <Typography variant="caption">Rp. {totalAkhir}</Typography>
                 </Stack>
               </Box>
             )}
