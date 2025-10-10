@@ -85,11 +85,7 @@ export default function PreviewPrint(props: PrintPageProps) {
               <Typography variant="body2">JUMLAH KERANJANG : {dataPembelian.length}</Typography>
             </Stack>
             <Stack direction='row' justifyContent='space-between'>
-              <Typography variant="body2">ADMINISTRASI     : Rp.{dataBiaya?.administrasi}</Typography>
-              <Typography variant="body2">Rp. {biayaAkhir.administrasi}</Typography>
-            </Stack>
-            <Stack direction='row' justifyContent='space-between'>
-              <Typography variant="body2">PAJAK : {dataBiaya?.pajak}%</Typography>
+              <Typography variant="body2">LAIN-LAIN: </Typography>
               <Typography variant="body2">Rp. {biayaAkhir.pajak}</Typography>
             </Stack>
             <Stack direction='row' justifyContent='space-between'>
