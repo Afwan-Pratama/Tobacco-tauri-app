@@ -1,7 +1,7 @@
 [package]
 name = "tobacco-tauri-app"
-version = "0.1.4"
-description = "A Tauri App"
+version = "0.1.5"
+description = "A Tobacco Transaction App"
 authors = ["you"]
 edition = "2021"
 
