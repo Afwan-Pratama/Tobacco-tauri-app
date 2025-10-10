@@ -76,6 +76,21 @@ CREATE TABLE IF NOT EXISTS "Penjualan" (
 	FOREIGN KEY("wilayah_id") REFERENCES "Wilayah"("id")
 );`)
 
+  await db.execute(`
+CREATE TABLE IF NOT EXISTS "Keterangan" (
+	"id"	INTEGER,
+	"lunas"	NUMERIC DEFAULT 1,
+	"total"	NUMERIC,
+	"bayar"	NUMERIC,
+	"sisa"	NUMERIC,
+	"tgl_lunas"	TEXT,
+	"tgl_pembelian"	TEXT,
+	"wilayah_id"	INTEGER,
+	PRIMARY KEY("id" AUTOINCREMENT),
+	FOREIGN KEY("wilayah_id") REFERENCES "Wilayah"("id")
+);
+`)
+
   await db.execute('INSERT INTO Wilayah(nama, kondisi, value_kondisi, netto_kondisi, netto_default) VALUES ($1,$2,$3,$4,$5)', ["Wonogiri", "tidak", 0, 0, 4])
   await db.execute('INSERT INTO Wilayah(nama, kondisi, value_kondisi, netto_kondisi, netto_default) VALUES ($1,$2,$3,$4,$5)', ["Weleri", "lebih", 55, 4, 3])
 
