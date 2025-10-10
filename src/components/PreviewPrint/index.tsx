@@ -63,7 +63,7 @@ export default function PreviewPrint(props: PrintPageProps) {
             <Typography variant="body2">BK</Typography>
             <Typography variant="body2">BB</Typography>
             <Typography variant="body2">HARGA</Typography>
-            <Typography variant="body2">JUMLAH HARGA</Typography>
+            <Typography variant="body2">JUMLAH</Typography>
           </Stack>
           {dataPembelian.map((v, i: number) => (
             <Stack key={i} direction='row' justifyContent='space-between'>
