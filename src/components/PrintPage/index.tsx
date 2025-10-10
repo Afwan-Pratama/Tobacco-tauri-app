@@ -70,11 +70,11 @@ export default function PrintPage(props: PrintPageProps) {
     <Box>
       <Box sx={{ border: '2px solid black' }} display='none' >
         <Box ref={contentRef} >
-          <Stack marginTop='200px' justifyContent='space-between' height='750px'>
+          <Stack marginX='175px' marginTop='25px' justifyContent='space-between' height='400px'>
             <Box>
               <Stack justifyContent='space-between' direction='row' sx={{ padding: '10px' }}>
                 <Box>
-                  <Typography variant="body2">Kode : {dataPembelian.length != 0 ? dataPembelian[0].nama : ''}</Typography>
+                  <Typography variant="body2">Kode : {dataPembelian.length != 0 ? dataPembelian[0].kode_id : ''}</Typography>
                   <Typography variant="body2">Tanggal : {dataPembelian.length != 0 ? dataPembelian[0].created_date : ''}</Typography>
                 </Box>
                 <Typography variant="body2">Kepada : {dataPembelian.length != 0 ? dataPembelian[0].nama : ''}</Typography>
@@ -106,11 +106,7 @@ export default function PrintPage(props: PrintPageProps) {
                   <Typography variant="body2">JUMLAH KERANJANG : {dataPembelian.length}</Typography>
                 </Stack>
                 <Stack direction='row' justifyContent='space-between'>
-                  <Typography variant="body2">ADMINISTRASI     : Rp.{dataBiaya?.administrasi}</Typography>
-                  <Typography variant="body2">Rp. {biayaAkhir.administrasi}</Typography>
-                </Stack>
-                <Stack direction='row' justifyContent='space-between'>
-                  <Typography variant="body2">PAJAK : {dataBiaya?.pajak}%</Typography>
+                  <Typography variant="body2">LAIN-LAIN : </Typography>
                   <Typography variant="body2">Rp. {biayaAkhir.pajak}</Typography>
                 </Stack>
                 <Stack direction='row' justifyContent='space-between'>
