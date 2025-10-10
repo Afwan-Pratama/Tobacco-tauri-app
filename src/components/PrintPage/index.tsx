@@ -71,7 +71,7 @@ export default function PrintPage(props: PrintPageProps) {
     <Box>
       <Box sx={{ border: '2px solid black' }} display='none' >
         <Box ref={contentRef} >
-          <Stack marginX='200px' marginTop='50px' justifyContent='space-between' height='450px'>
+          <Stack marginX='225px' marginTop='50px' justifyContent='space-between' height='450px'>
             <Box>
               <Stack justifyContent='space-between' direction='row' sx={{ padding: '10px' }}>
                 <Stack>
