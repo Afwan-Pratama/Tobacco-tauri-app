@@ -17,6 +17,8 @@ import PrintPage from "../../../components/PrintPage";
 import PreviewPrint from "../../../components/PreviewPrint";
 import { useParams } from "react-router-dom";
 import { dateNow } from "../../../helpers/dateNow";
+import numberSplitter from "../../../helpers/numberSplitter";
+import { NumericFormat } from "react-number-format";
 
 interface biayaPembelian {
   administrasi: number
@@ -317,14 +319,15 @@ export default function InputPembelian() {
                 nama: e.target.value.toUpperCase()
               })}
               value={inputValue.nama} />
-            <TextField
+            <NumericFormat
+              customInput={TextField}
+              label="Harga"
               margin="normal"
-              label={"Harga"}
               fullWidth
-              type="number"
+              thousandSeparator
               slotProps={{
                 input: {
-                  startAdornment: <InputAdornment position="start">Rp</InputAdornment>
+                  startAdornment: <InputAdornment position="start">Rp.</InputAdornment>
                 }
               }}
               onChange={(e) => setInputValue({
@@ -332,13 +335,13 @@ export default function InputPembelian() {
                 //@ts-ignore
                 harga: e.target.value
               })}
-              value={inputValue.harga == 0 ? '' : inputValue.harga}
-            />
-            <TextField
+              value={inputValue.harga == 0 ? '' : inputValue.harga} />
+            <NumericFormat
+              customInput={TextField}
+              label="Bruto"
               margin="normal"
-              label={"Bruto"}
               fullWidth
-              type="number"
+              thousandSeparator
               slotProps={{
                 input: {
                   endAdornment: <InputAdornment position="end">Kg</InputAdornment>
@@ -350,11 +353,12 @@ export default function InputPembelian() {
                 bruto: e.target.value
               })}
               value={inputValue.bruto == 0 ? '' : inputValue.bruto} />
-            <TextField
+            <NumericFormat
+              customInput={TextField}
+              label="Bonus"
               margin="normal"
-              label={"Bonus"}
               fullWidth
-              type="number"
+              thousandSeparator
               slotProps={{
                 input: {
                   startAdornment: <InputAdornment position="start">Rp.</InputAdornment>
@@ -367,7 +371,7 @@ export default function InputPembelian() {
               })}
               value={inputValue.bonus == 0 ? '' : inputValue.bonus} />
             <Typography variant="body1">Netto : {inputValue.netto} Kg</Typography>
-            <Typography variant="body1">Jumlah Harga: Rp.{jumlahHarga}</Typography>
+            <Typography variant="body1">Jumlah Harga: Rp.{numberSplitter(jumlahHarga)}</Typography>
             <Button
               variant="contained"
               sx={{ margin: '20px' }}

@@ -20,6 +20,7 @@ import TableRow from "@mui/material/TableRow";
 import Database from "@tauri-apps/plugin-sql";
 import { useParams } from "react-router-dom";
 import ChevronLeft from "@mui/icons-material/ChevronLeft";
+import { NumericFormat } from "react-number-format";
 
 interface pembelianProps {
   id: number
@@ -176,14 +177,15 @@ export default function FormPenjualan(props: FormPenjualanProps) {
             }
           </FormControl>
 
-          <TextField
+          <NumericFormat
+            customInput={TextField}
+            label="Harga"
             margin="normal"
-            label={"Harga"}
             fullWidth
-            type="number"
+            thousandSeparator
             slotProps={{
               input: {
-                startAdornment: <InputAdornment position="start">Rp</InputAdornment>
+                startAdornment: <InputAdornment position="start">Rp.</InputAdornment>
               }
             }}
             onChange={(e) => setInputValue({
@@ -191,13 +193,13 @@ export default function FormPenjualan(props: FormPenjualanProps) {
               //@ts-ignore
               harga: e.target.value
             })}
-            value={inputValue.harga == 0 ? '' : inputValue.harga}
-          />
-          <TextField
+            value={inputValue.harga == 0 ? '' : inputValue.harga} />
+          <NumericFormat
+            customInput={TextField}
+            label="Bruto"
             margin="normal"
-            label={"Bruto"}
             fullWidth
-            type="number"
+            thousandSeparator
             slotProps={{
               input: {
                 endAdornment: <InputAdornment position="end">Kg</InputAdornment>
@@ -209,11 +211,12 @@ export default function FormPenjualan(props: FormPenjualanProps) {
               bruto: e.target.value
             })}
             value={inputValue.bruto == 0 ? '' : inputValue.bruto} />
-          <TextField
+          <NumericFormat
+            customInput={TextField}
+            label="Bonus"
             margin="normal"
-            label={"Netto"}
             fullWidth
-            type="number"
+            thousandSeparator
             slotProps={{
               input: {
                 endAdornment: <InputAdornment position="end">Kg</InputAdornment>
@@ -222,7 +225,7 @@ export default function FormPenjualan(props: FormPenjualanProps) {
             onChange={(e) => setInputValue({
               ...inputValue,
               //@ts-ignore
-              bonus: e.target.value
+              netto: e.target.value
             })}
             value={inputValue.netto == 0 ? '' : inputValue.netto} />
           <Typography variant="body1">Jumlah Harga: Rp.{jumlahHarga}</Typography>

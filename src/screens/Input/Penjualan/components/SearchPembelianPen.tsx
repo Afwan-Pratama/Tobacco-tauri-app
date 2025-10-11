@@ -15,6 +15,7 @@ import TableRow from '@mui/material/TableRow'
 import TextField from '@mui/material/TextField'
 import Typography from "@mui/material/Typography";
 import { useState } from "react";
+import numberSplitter from "../../../../helpers/numberSplitter";
 
 interface pembelianProps {
   id: number
@@ -113,10 +114,10 @@ export default function SearchPembelianPen(props: SearchPembelianProps) {
                   <TableCell>{v.created_date}</TableCell>
                   <TableCell>{v.nama}</TableCell>
                   <TableCell>{v.kode_id}</TableCell>
-                  <TableCell>{v.harga}</TableCell>
+                  <TableCell>{numberSplitter(v.harga)}</TableCell>
                   <TableCell>{v.bruto}</TableCell>
                   <TableCell>{v.netto}</TableCell>
-                  <TableCell>{v.jumlah_harga}</TableCell>
+                  <TableCell>{numberSplitter(v.jumlah_harga)}</TableCell>
                   <TableCell>
                     <IconButton onClick={() => handleChoosePembelian(v)}>
                       <NavigateNext />

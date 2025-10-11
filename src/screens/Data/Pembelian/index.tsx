@@ -10,6 +10,7 @@ import { useParams } from 'react-router-dom';
 import Autocomplete from '@mui/material/Autocomplete';
 import Checkbox from '@mui/material/Checkbox'
 import FormControlLabel from '@mui/material/FormControlLabel';
+import numberSplitter from '../../../helpers/numberSplitter';
 
 const columns: GridColDef[] = [
   { field: 'no', headerName: 'No.', width: 90 },
@@ -240,19 +241,23 @@ export default function DataPembelian() {
         <Stack justifyContent='space-between' direction='row' sx={{ p: 4, bgcolor: 'background.paper', bottom: 0, right: 0, left: 0, position: 'sticky' }}>
           <Box>
             <Typography variant='body1'>Total Keranjang: {dataPembelian.length}</Typography>
-            <Typography variant='body1'>Rata-Rata Harga: Rp. {Math.floor(jumlahTotal.harga / dataPembelian.length)}</Typography>
+            <Typography variant='body1'>
+              Rata-Rata Harga: Rp. {numberSplitter(Math.floor(jumlahTotal.harga / dataPembelian.length))}
+            </Typography>
           </Box>
           <Box>
-            <Typography variant='body1'>Total Bruto : {jumlahTotal.bruto} Kg</Typography>
+            <Typography variant='body1'>Total Bruto : {numberSplitter(jumlahTotal.bruto)} Kg</Typography>
             <Typography variant='body1'>Rata-Rata Bruto : {Math.floor(jumlahTotal.bruto / dataPembelian.length)} Kg</Typography>
           </Box>
           <Box>
-            <Typography variant='body1'>Total Netto : {jumlahTotal.netto} Kg</Typography>
+            <Typography variant='body1'>Total Netto : {numberSplitter(jumlahTotal.netto)} Kg</Typography>
             <Typography variant='body1'>Rata-Rata Netto : {Math.floor(jumlahTotal.netto / dataPembelian.length)} Kg</Typography>
           </Box>
           <Box>
-            <Typography variant='body1'>Total Jumlah Harga: Rp. {jumlahTotal.jumlah_harga} </Typography>
-            <Typography variant='body1'>Rata-Rata Jumlah Harga: Rp. {Math.floor(jumlahTotal.jumlah_harga / dataPembelian.length)} </Typography>
+            <Typography variant='body1'>Total Jumlah Harga: Rp. {numberSplitter(jumlahTotal.jumlah_harga)} </Typography>
+            <Typography variant='body1'>
+              Rata-Rata Jumlah Harga: Rp. {numberSplitter(Math.floor(jumlahTotal.jumlah_harga / dataPembelian.length))}
+            </Typography>
           </Box>
         </Stack>
       }
