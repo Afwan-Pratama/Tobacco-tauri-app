@@ -196,10 +196,10 @@ export default function FormPem(props: FormPemProps) {
             startAdornment: <InputAdornment position="start">Rp.</InputAdornment>
           }
         }}
-        onChange={(e) => setInputValue({
+        onValueChange={(e) => setInputValue({
           ...inputValue,
           //@ts-ignore
-          harga: e.target.value
+          harga: e.value
         })}
         value={inputValue.harga == 0 ? '' : inputValue.harga} />
       <NumericFormat
@@ -213,10 +213,10 @@ export default function FormPem(props: FormPemProps) {
             endAdornment: <InputAdornment position="end">Kg</InputAdornment>
           }
         }}
-        onChange={(e) => setInputValue({
+        onValueChange={(e) => setInputValue({
           ...inputValue,
           //@ts-ignore
-          bruto: e.target.value
+          bruto: e.value
         })}
         value={inputValue.bruto == 0 ? '' : inputValue.bruto} />
       <NumericFormat
@@ -230,10 +230,10 @@ export default function FormPem(props: FormPemProps) {
             startAdornment: <InputAdornment position="start">Rp.</InputAdornment>
           }
         }}
-        onChange={(e) => setInputValue({
+        onValueChange={(e) => setInputValue({
           ...inputValue,
           //@ts-ignore
-          bonus: e.target.value
+          bonus: e.value
         })}
         value={inputValue.bonus == 0 ? '' : inputValue.bonus} />
       <Typography variant="body1">Netto : {inputValue.netto} Kg</Typography>

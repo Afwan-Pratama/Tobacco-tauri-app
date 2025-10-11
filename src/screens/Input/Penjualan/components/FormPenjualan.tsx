@@ -188,10 +188,10 @@ export default function FormPenjualan(props: FormPenjualanProps) {
                 startAdornment: <InputAdornment position="start">Rp.</InputAdornment>
               }
             }}
-            onChange={(e) => setInputValue({
+            onValueChange={(e) => setInputValue({
               ...inputValue,
               //@ts-ignore
-              harga: e.target.value
+              harga: e.value
             })}
             value={inputValue.harga == 0 ? '' : inputValue.harga} />
           <NumericFormat
@@ -205,10 +205,10 @@ export default function FormPenjualan(props: FormPenjualanProps) {
                 endAdornment: <InputAdornment position="end">Kg</InputAdornment>
               }
             }}
-            onChange={(e) => setInputValue({
+            onValueChange={(e) => setInputValue({
               ...inputValue,
               //@ts-ignore
-              bruto: e.target.value
+              bruto: e.value
             })}
             value={inputValue.bruto == 0 ? '' : inputValue.bruto} />
           <NumericFormat
@@ -222,10 +222,10 @@ export default function FormPenjualan(props: FormPenjualanProps) {
                 endAdornment: <InputAdornment position="end">Kg</InputAdornment>
               }
             }}
-            onChange={(e) => setInputValue({
+            onValueChange={(e) => setInputValue({
               ...inputValue,
               //@ts-ignore
-              netto: e.target.value
+              netto: e.value
             })}
             value={inputValue.netto == 0 ? '' : inputValue.netto} />
           <Typography variant="body1">Jumlah Harga: Rp.{jumlahHarga}</Typography>
