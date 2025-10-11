@@ -1,6 +1,7 @@
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
+import numberSplitter from "../../helpers/numberSplitter";
 
 interface pembelianProps {
   no: string
@@ -70,32 +71,32 @@ export default function PreviewPrint(props: PrintPageProps) {
               <Typography variant="body2">{v.no}</Typography>
               <Typography variant="body2">{v.bruto}</Typography>
               <Typography variant="body2">{v.netto}</Typography>
-              <Typography variant="body2">x Rp. {v.harga}</Typography>
-              <Typography variant="body2">Rp. {v.jumlah_harga}</Typography>
+              <Typography variant="body2">x Rp. {numberSplitter(v.harga)}</Typography>
+              <Typography variant="body2">Rp. {numberSplitter(v.jumlah_harga)}</Typography>
             </Stack>
           ))}
         </Box>
         {dataPembelian.length != 0 && (
           <Box>
             <Stack direction='row' sx={{ border: '2px solid black' }} justifyContent='space-between'>
-              <Typography variant="body2">JUMLAH</Typography>
-              <Typography variant="body2">Rp. {jumlahTotal.harga}</Typography>
+              <Typography variant="body2">TOTAL JUMLAH</Typography>
+              <Typography variant="body2">Rp. {numberSplitter(jumlahTotal.harga)}</Typography>
             </Stack>
             <Stack direction='row'>
               <Typography variant="body2">JUMLAH KERANJANG : {dataPembelian.length}</Typography>
             </Stack>
             <Stack direction='row' justifyContent='space-between'>
               <Typography variant="body2">LAIN-LAIN: </Typography>
-              <Typography variant="body2">Rp. {biayaAkhir.pajak}</Typography>
+              <Typography variant="body2">Rp. {numberSplitter(biayaAkhir.pajak)}</Typography>
             </Stack>
             <Stack direction='row' justifyContent='space-between'>
-              <Typography variant="body2">ROKOK : Rp. {dataBiaya?.rokok}</Typography>
+              <Typography variant="body2">ROKOK : Rp. {numberSplitter(dataBiaya?.rokok)}</Typography>
               <Typography variant="body2">x {biayaAkhir.jumlah_rokok}</Typography>
-              <Typography variant="body2">Rp. {biayaAkhir.rokok}</Typography>
+              <Typography variant="body2">Rp. {numberSplitter(biayaAkhir.rokok)}</Typography>
             </Stack>
             <Stack direction='row' justifyContent='space-between'>
               <Typography variant="body2">BAYAR : </Typography>
-              <Typography variant="body2">Rp. {totalAkhir}</Typography>
+              <Typography variant="body2">Rp. {numberSplitter(totalAkhir)}</Typography>
             </Stack>
           </Box>
         )}

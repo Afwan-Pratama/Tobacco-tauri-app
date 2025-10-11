@@ -7,6 +7,7 @@ import Typography from "@mui/material/Typography";
 import { useRef } from "react";
 import { useReactToPrint } from "react-to-print"
 import { Grid } from "@mui/material";
+import numberSplitter from "../../helpers/numberSplitter";
 
 interface pembelianProps {
   no: string
@@ -71,7 +72,7 @@ export default function PrintPage(props: PrintPageProps) {
     <Box>
       <Box sx={{ border: '2px solid black' }} display='none' >
         <Box ref={contentRef} >
-          <Stack marginX='225px' marginTop='50px' justifyContent='space-between' height='450px'>
+          <Stack marginX='230px' marginTop='60px' justifyContent='space-between' height='500px'>
             <Box>
               <Stack justifyContent='space-between' direction='row' sx={{ padding: '10px' }}>
                 <Stack>
@@ -90,11 +91,11 @@ export default function PrintPage(props: PrintPageProps) {
                 <Grid size={1}>
                   <Typography variant="caption">BB</Typography>
                 </Grid>
-                <Grid size={3}>
+                <Grid size={4}>
                   <Typography variant="caption">HARGA</Typography>
                 </Grid>
-                <Grid size={5} textAlign='right'>
-                  <Typography variant="caption">JUMLAH HARGA</Typography>
+                <Grid size={4} textAlign='right'>
+                  <Typography variant="caption">JUMLAH</Typography>
                 </Grid>
               </Grid>
               {dataPembelian.map((v, i: number) => (
@@ -108,11 +109,11 @@ export default function PrintPage(props: PrintPageProps) {
                   <Grid size={1}>
                     <Typography variant="caption">{v.netto}</Typography>
                   </Grid>
-                  <Grid size={3}>
-                    <Typography variant="caption">x {v.harga}</Typography>
+                  <Grid size={4}>
+                    <Typography variant="caption">x Rp.{numberSplitter(v.harga)}</Typography>
                   </Grid>
-                  <Grid size={5} textAlign='right'>
-                    <Typography variant="caption">{v.jumlah_harga}</Typography>
+                  <Grid size={4} textAlign='right'>
+                    <Typography variant="caption">Rp.{numberSplitter(v.jumlah_harga)}</Typography>
                   </Grid>
                 </Grid>
               ))}
@@ -120,24 +121,24 @@ export default function PrintPage(props: PrintPageProps) {
             {dataPembelian.length != 0 && (
               <Box>
                 <Stack direction='row' sx={{ border: '2px solid black' }} justifyContent='space-between'>
-                  <Typography variant="caption">JUMLAH</Typography>
-                  <Typography variant="caption">Rp. {jumlahTotal.harga}</Typography>
+                  <Typography variant="caption">TOTAL JUMLAH</Typography>
+                  <Typography variant="caption">Rp. {numberSplitter(jumlahTotal.harga)}</Typography>
                 </Stack>
                 <Stack direction='row'>
                   <Typography variant="caption">JUMLAH KERANJANG : {dataPembelian.length}</Typography>
                 </Stack>
                 <Stack direction='row' justifyContent='space-between'>
                   <Typography variant="caption">LAIN-LAIN : </Typography>
-                  <Typography variant="caption">Rp. {biayaAkhir.pajak}</Typography>
+                  <Typography variant="caption">Rp. {numberSplitter(biayaAkhir.pajak)}</Typography>
                 </Stack>
                 <Stack direction='row' justifyContent='space-between'>
-                  <Typography variant="caption">ROKOK : Rp. {dataBiaya?.rokok}</Typography>
+                  <Typography variant="caption">ROKOK : Rp. {numberSplitter(dataBiaya?.rokok)}</Typography>
                   <Typography variant="caption">x {biayaAkhir.jumlah_rokok}</Typography>
-                  <Typography variant="caption">Rp. {biayaAkhir.rokok}</Typography>
+                  <Typography variant="caption">Rp. {numberSplitter(biayaAkhir.rokok)}</Typography>
                 </Stack>
                 <Stack direction='row' justifyContent='space-between'>
                   <Typography variant="caption">BAYAR : </Typography>
-                  <Typography variant="caption">Rp. {totalAkhir}</Typography>
+                  <Typography variant="caption">Rp. {numberSplitter(totalAkhir)}</Typography>
                 </Stack>
               </Box>
             )}

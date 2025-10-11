@@ -17,7 +17,11 @@ import EditSquare from '@mui/icons-material/EditSquare';
 import Save from '@mui/icons-material/Save';
 import { useEffect, useState } from 'react';
 import Database from '@tauri-apps/plugin-sql';
-import { InputLabel, MenuItem, Select } from '@mui/material';
+import InputLabel from '@mui/material/InputLabel'
+import MenuItem from '@mui/material/MenuItem'
+import Select from '@mui/material/Select';
+import { NumericFormat } from 'react-number-format'
+import { InputAdornment } from '@mui/material';
 
 const modalStyle = {
   position: 'absolute',
@@ -241,32 +245,46 @@ export default function Wilayah() {
               <MenuItem value={'tidak'}>Tidak Ada</MenuItem>
             </Select>
           </FormControl>
-          <TextField
-            type='number'
+          <NumericFormat
+            disabled={disableDari}
+            customInput={TextField}
             margin='normal'
             label='Dari'
             fullWidth
-            disabled={disableDari}
+            slotProps={{
+              input: {
+                endAdornment: <InputAdornment position="end">Kg</InputAdornment>
+              }
+            }}
             //@ts-ignore
             onChange={(e) => setInputWilayah({ ...inputWilayah, value_kondisi: e.target.value })}
-            value={inputWilayah.value_kondisi} />
-          <TextField
-            type='number'
+            value={inputWilayah.value_kondisi == 0 ? '' : inputWilayah.value_kondisi} />
+          <NumericFormat
+            customInput={TextField}
             margin='normal'
-            label='Potongan netto dari kondisi'
+            label='Potongan netto Dari Kondisi'
             fullWidth
-            disabled={disableDari}
+            slotProps={{
+              input: {
+                endAdornment: <InputAdornment position="end">Kg</InputAdornment>
+              }
+            }}
             //@ts-ignore
             onChange={(e) => setInputWilayah({ ...inputWilayah, netto_kondisi: e.target.value })}
-            value={inputWilayah.netto_kondisi} />
-          <TextField
-            type='number'
+            value={inputWilayah.netto_kondisi == 0 ? '' : inputWilayah.netto_kondisi} />
+          <NumericFormat
+            customInput={TextField}
             margin='normal'
-            label='Potongan netto awal'
+            label='Potongan netto Default'
             fullWidth
             //@ts-ignore
             onChange={(e) => setInputWilayah({ ...inputWilayah, netto_default: e.target.value })}
-            value={inputWilayah.netto_default} />
+            slotProps={{
+              input: {
+                endAdornment: <InputAdornment position="end">Kg</InputAdornment>
+              }
+            }}
+            value={inputWilayah.netto_default == 0 ? '' : inputWilayah.netto_default} />
           <Button onClick={handleSubmit} disabled={disableButton} startIcon={<Save />}>Simpan</Button>
         </Stack>
       </Modal>

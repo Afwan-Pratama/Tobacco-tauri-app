@@ -8,6 +8,7 @@ import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 import { getLabaKoPemb, getLabaKoPembWil, getLabaKoPenj, getLabaKoPenjWil, getLabaNo, getLabaNoWil, getLabaRugi, getLabaWil } from '../../../helpers/fetchSQL/Select/labaRugi';
 import { getKodePembeAsLab, getKodePenjuAsLab, getWilayahOnlyLab } from '../../../helpers/fetchSQL/Select';
+import numberSplitter from '../../../helpers/numberSplitter';
 
 const columns: GridColDef[] = [
   { field: 'no', headerName: 'No Penjual', width: 50 },
@@ -302,7 +303,7 @@ export default function LabaRugi() {
         <Stack justifyContent='space-between' direction='row' sx={{ p: 4, bgcolor: 'background.paper', bottom: 0, right: 0, left: 0, position: 'sticky' }}>
           <Box>
             <Typography variant='body1'>Total Keranjang: {dataLabaRugi.length}</Typography>
-            <Typography variant='body1'>Rata-Rata Laba Harga: Rp. {Math.floor(jumlahTotal.harga / dataLabaRugi.length)}</Typography>
+            <Typography variant='body1'>Rata-Rata Laba Harga: Rp. {numberSplitter(Math.floor(jumlahTotal.harga / dataLabaRugi.length))}</Typography>
           </Box>
           <Box>
             <Typography variant='body1'>Total Selisih Bruto : {jumlahTotal.bruto} Kg</Typography>
@@ -313,8 +314,8 @@ export default function LabaRugi() {
             <Typography variant='body1'>Rata-Rata Selisih Netto : {Math.floor(jumlahTotal.netto / dataLabaRugi.length)} Kg</Typography>
           </Box>
           <Box>
-            <Typography variant='body1'>Total Laba Jumlah Harga: Rp. {jumlahTotal.jumlah_harga} </Typography>
-            <Typography variant='body1'>Rata-Rata Laba Jumlah Harga: Rp. {Math.floor(jumlahTotal.jumlah_harga / dataLabaRugi.length)} </Typography>
+            <Typography variant='body1'>Total Laba Jumlah Harga: Rp. {numberSplitter(jumlahTotal.jumlah_harga)} </Typography>
+            <Typography variant='body1'>Rata-Rata Laba Jumlah Harga: Rp. {numberSplitter(Math.floor(jumlahTotal.jumlah_harga / dataLabaRugi.length))} </Typography>
           </Box>
         </Stack>
       }

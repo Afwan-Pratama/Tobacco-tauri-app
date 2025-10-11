@@ -9,6 +9,7 @@ import { getKodePembeAsLab, getWilayahOnlyLab } from '../../../helpers/fetchSQL/
 import { getCustomBonus } from '../../../helpers/fetchSQL/Select/Bonus';
 import CustomDatePicker from '../../../components/CustomDatePicker';
 import Button from '@mui/material/Button'
+import numberSplitter from '../../../helpers/numberSplitter';
 
 const columns: GridColDef[] = [
   { field: 'no', headerName: 'No.', width: 90 },
@@ -214,20 +215,20 @@ export default function Bonus() {
           }}
         >
           <Box>
-            <Typography variant='body1'>Total Bruto : {jumlahTotal.bruto} Kg</Typography>
+            <Typography variant='body1'>Total Bruto : {numberSplitter(jumlahTotal.bruto)} Kg</Typography>
             <Typography variant='body1'>Rata-Rata Bruto : {Math.floor(jumlahTotal.bruto / dataBonus.length)} Kg</Typography>
           </Box>
           <Box>
-            <Typography variant='body1'>Total Netto : {jumlahTotal.netto} Kg</Typography>
+            <Typography variant='body1'>Total Netto : {numberSplitter(jumlahTotal.netto)} Kg</Typography>
             <Typography variant='body1'>Rata-Rata Netto : {Math.floor(jumlahTotal.netto / dataBonus.length)} Kg</Typography>
           </Box>
           <Box>
             <Typography variant='body1'>Total Keranjang: {dataBonus.length}</Typography>
-            <Typography variant='body1'>Rata-Rata Bonus: Rp. {Math.floor(jumlahTotal.bonus / dataBonus.length)} </Typography>
+            <Typography variant='body1'>Rata-Rata Bonus: Rp. {numberSplitter(Math.floor(jumlahTotal.bonus / dataBonus.length))} </Typography>
           </Box>
           <Box>
-            <Typography variant='body1'>Total Jumlah Bonus : Rp. {jumlahTotal.jumlah_bonus} </Typography>
-            <Typography variant='body1'>Rata-Rata Jumlah Bonus: Rp. {Math.floor(jumlahTotal.jumlah_bonus / dataBonus.length)} </Typography>
+            <Typography variant='body1'>Total Jumlah Bonus : Rp. {numberSplitter(jumlahTotal.jumlah_bonus)} </Typography>
+            <Typography variant='body1'>Rata-Rata Jumlah Bonus: Rp. {numberSplitter(Math.floor(jumlahTotal.jumlah_bonus / dataBonus.length))} </Typography>
           </Box>
         </Stack>
       }
