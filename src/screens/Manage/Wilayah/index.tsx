@@ -257,7 +257,7 @@ export default function Wilayah() {
               }
             }}
             //@ts-ignore
-            onChange={(e) => setInputWilayah({ ...inputWilayah, value_kondisi: e.target.value })}
+            onValueChange={(e) => setInputWilayah({ ...inputWilayah, value_kondisi: e.value })}
             value={inputWilayah.value_kondisi == 0 ? '' : inputWilayah.value_kondisi} />
           <NumericFormat
             customInput={TextField}
@@ -270,7 +270,7 @@ export default function Wilayah() {
               }
             }}
             //@ts-ignore
-            onChange={(e) => setInputWilayah({ ...inputWilayah, netto_kondisi: e.target.value })}
+            onValueChange={(e) => setInputWilayah({ ...inputWilayah, netto_kondisi: e.value })}
             value={inputWilayah.netto_kondisi == 0 ? '' : inputWilayah.netto_kondisi} />
           <NumericFormat
             customInput={TextField}
@@ -278,7 +278,7 @@ export default function Wilayah() {
             label='Potongan netto Default'
             fullWidth
             //@ts-ignore
-            onChange={(e) => setInputWilayah({ ...inputWilayah, netto_default: e.target.value })}
+            onValueChange={(e) => setInputWilayah({ ...inputWilayah, netto_default: e.value })}
             slotProps={{
               input: {
                 endAdornment: <InputAdornment position="end">Kg</InputAdornment>
